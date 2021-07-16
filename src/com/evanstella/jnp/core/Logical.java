@@ -4,6 +4,7 @@ public class Logical extends NDArray {
 
     protected boolean[] data;
 
+
     /**************************************************************************
      * Class constructor. Initializes a Logical with parameterized dimensions.
      * The dimensions are deep copied to limit their write access to the object.
@@ -19,18 +20,15 @@ public class Logical extends NDArray {
         data = new boolean[size];
     }
 
-
     /**************************************************************************
      * TODO
      *************************************************************************/
     public Logical ( boolean[] indata ) {}
 
-
     /**************************************************************************
      * TODO
      *************************************************************************/
     public Logical ( boolean[][] indata ) {}
-
 
     /**************************************************************************
      * Initializes a Logical with all true values.
@@ -45,7 +43,6 @@ public class Logical extends NDArray {
         return L;
     }
 
-
     /**************************************************************************
      * Initializes a Logical with all false values. Literally the same as
      * calling the constructor but here for completeness' sake.
@@ -58,7 +55,6 @@ public class Logical extends NDArray {
         return new Logical( dimensions );
     }
 
-
     /**************************************************************************
      * Gets a reference to the raw data contained in the logical. Only
      * recommended if you need fast access to the data in the object.
@@ -68,7 +64,6 @@ public class Logical extends NDArray {
     public boolean[] getData ( ) {
         return data;
     }
-
 
     /**************************************************************************
      * Sets the value of the data at the subscript with the inputted value
@@ -84,7 +79,6 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
-
     /**************************************************************************
      * Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
@@ -96,7 +90,6 @@ public class Logical extends NDArray {
     public void setFast ( boolean indata, int ind ) {
         data[ind] = indata;
     }
-
 
     /**************************************************************************
      * TODO
@@ -123,7 +116,6 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
-
     /**************************************************************************
      * TODO
      * Sets the value of the data at the index with the inputted value. If
@@ -143,14 +135,12 @@ public class Logical extends NDArray {
         }
     }
 
-
     /**************************************************************************
      * TODO
      *************************************************************************/
     public Logical get ( ) {
         return null;
     }
-
 
     /**************************************************************************
      * Reshapes the Logical by simply changing the dimensions, not the data.
@@ -173,7 +163,6 @@ public class Logical extends NDArray {
         System.arraycopy( data, 0, reshaped.data, 0, data.length );
         return reshaped;
     }
-
 
     /**************************************************************************
      * Transposes the Logical. Only defined for Matrices (<3 dimensions); any
@@ -202,7 +191,6 @@ public class Logical extends NDArray {
         return transposed;
     }
 
-
     /**************************************************************************
      * flattens the Logical to one dimension, not changing any of the data.
      *
@@ -213,7 +201,6 @@ public class Logical extends NDArray {
         System.arraycopy( data, 0, flat.data, 0, data.length );
         return flat;
     }
-
 
     /**************************************************************************
      * Creates a deep copy of this Logical object and returns a reference to
@@ -227,7 +214,6 @@ public class Logical extends NDArray {
         return copy;
     }
 
-
     /**************************************************************************
      * TODO
      *
@@ -237,7 +223,6 @@ public class Logical extends NDArray {
      * @return a reference to the new Logical
      *************************************************************************/
     public Logical concat ( int dimension, Logical L ) {return null;}
-
 
     /**************************************************************************
      * Creates a string representation of the Logical for printing. Will only
@@ -266,7 +251,6 @@ public class Logical extends NDArray {
         return s.toString();
     }
 
-
     /**************************************************************************
      * Compares two Logical objects to check if they are equal in both
      * dimension and data.
@@ -293,8 +277,9 @@ public class Logical extends NDArray {
     }
 
 
-
-    /*Private Methods*/
+    /**************************************************************************
+     * Private Methods
+     *************************************************************************/
 
     // TODO
     private void resize ( int ...newDims ) {
