@@ -4,11 +4,10 @@ public abstract class NDArray {
 
     protected int[] shape;
 
+
     public abstract NDArray get ( );
 
-    public abstract NDArray reshape ( );
-
-    public abstract NDArray diagonal ( );
+    public abstract NDArray reshape ( int ...dimensions );
 
     public abstract NDArray transpose ( );
 
@@ -49,6 +48,8 @@ public abstract class NDArray {
 
     public String toString ( ) {
         StringBuilder s = new StringBuilder();
+        if ( shape.length == 1 )
+            s.append("1x");
         for ( int i = 0; i < shape.length-1; i++ ) {
             s.append(shape[i]).append("x");
         }

@@ -19,6 +19,19 @@ public class Logical extends NDArray {
         data = new boolean[size];
     }
 
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public Logical ( boolean[] indata ) {}
+
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public Logical ( boolean[][] indata ) {}
+
+
     /**************************************************************************
      * Initializes a Logical with all true values.
      *
@@ -32,6 +45,7 @@ public class Logical extends NDArray {
         return L;
     }
 
+
     /**************************************************************************
      * Initializes a Logical with all false values. Literally the same as
      * calling the constructor but here for completeness' sake.
@@ -43,6 +57,18 @@ public class Logical extends NDArray {
     public static Logical False ( int ...dimensions ) {
         return new Logical( dimensions );
     }
+
+
+    /**************************************************************************
+     * Gets a reference to the raw data contained in the logical. Only
+     * recommended if you need fast access to the data in the object.
+     *
+     * @return a reference to the Logical data.
+     *************************************************************************/
+    public boolean[] getData ( ) {
+        return data;
+    }
+
 
     /**************************************************************************
      * Sets the value of the data at the subscript with the inputted value
@@ -58,6 +84,7 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
+
     /**************************************************************************
      * Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
@@ -70,10 +97,12 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
+
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value If
+     * TODO
+     * Sets the value of the data at the subscript with the inputted value. If
      * the subscript is out of bounds of the data dimensions, the data will be
-     * resized, but this can be undesirable on larger objects as this
+     * resized, this can be undesirable on larger data sets as this
      * this operation is O(n) for data of size n.
      *
      * @param indata    the data to set
@@ -94,43 +123,121 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
-    public void set ( boolean indata, int ind ) {
-        /*TODO*/
-    }
-
-    public Logical get() {
-        return null;
-    }
-
-    public Logical reshape() {
-        return null;
-    }
-
-    public Logical diagonal() {
-        return null;
-    }
-
-    public Logical transpose() {
-        return null;
-    }
-
-    public Logical flatten() {
-        return null;
-    }
-
-    public Logical copy() {
-        return null;
-    }
 
     /**************************************************************************
-     * Gets a reference to the raw data contained in the logical. Only
-     * recommended if you need fast access to the data in the object.
+     * TODO
+     * Sets the value of the data at the index with the inputted value. If
+     * the index is out of bounds of the data dimensions, the data will be
+     * resized; this can be undesirable on larger data sets as this
+     * this operation is O(n) for data of size n.
      *
-     * @return a reference to the Logical data.
+     * @param indata    the data to set
+     * @param ind       the index at which to set the data
      *************************************************************************/
-    public boolean[] getDataRaw ( ) {
-        return data;
+    public void set ( boolean indata, int ind ) {
+        try {
+            data[ind] = indata;
+        } catch( ArrayIndexOutOfBoundsException E ) {
+            /*TODO*/
+            throw new IllegalDimensionException("TODO");
+        }
     }
+
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public Logical get ( ) {
+        return null;
+    }
+
+
+    /**************************************************************************
+     * Reshapes the Logical by simply changing the dimensions, not the data.
+     * This means the output will still be in row-major order and the dimensions
+     * must satisfy the requirement that the number of elements must not change.
+     *
+     * @param dimensions    The dimensions to shape the data to
+     *
+     * @return a reference to the reshaped Logical
+     *************************************************************************/
+    public Logical reshape ( int ...dimensions ) {
+        int size = 1;
+        for ( int n : dimensions )
+            size *= n;
+        if ( size != data.length )
+            throw new IllegalDimensionException(
+                "Invalid Dimensions. Number of elements must be the same"
+            );
+        Logical reshaped = new Logical( dimensions );
+        System.arraycopy( data, 0, reshaped.data, 0, data.length );
+        return reshaped;
+    }
+
+
+    /**************************************************************************
+     * Transposes the Logical. Only defined for Matrices (<3 dimensions); any
+     * input of higher dimension than 2 will cause an exception
+     *
+     * @return a reference to the transposed data.
+     *************************************************************************/
+    public Logical transpose ( ) {
+        if ( shape.length > 2 )
+            throw new IllegalDimensionException(
+                "Transpose operation is not defined for data with more than 2 dimensions"
+            );
+
+        Logical transposed;
+        if ( shape.length == 1 )
+            transposed = new Logical( shape[0], 1 );
+        else
+            transposed = new Logical( shape[1], shape[0] );
+
+        int r = transposed.shape[0];
+        int c = transposed.shape[1];
+        for ( int i = 0; i < r; i++ )
+            for (int j = 0; j < c; j++)
+                transposed.data[i*c+j] = data[j*r+i];
+
+        return transposed;
+    }
+
+
+    /**************************************************************************
+     * flattens the Logical to one dimension, not changing any of the data.
+     *
+     * @return a reference to the flattened Logical
+     *************************************************************************/
+    public Logical flatten ( ) {
+        Logical flat = new Logical( 1, data.length );
+        System.arraycopy( data, 0, flat.data, 0, data.length );
+        return flat;
+    }
+
+
+    /**************************************************************************
+     * Creates a deep copy of this Logical object and returns a reference to
+     * the copy.
+     *
+     * @return a reference to the copied object
+     *************************************************************************/
+    public Logical copy ( ) {
+        Logical copy = new Logical( this.shape );
+        System.arraycopy( data, 0, copy.data, 0, data.length );
+        return copy;
+    }
+
+
+    /**************************************************************************
+     * TODO
+     *
+     * @param dimension the dimension to concatenate along
+     * @param L         the Logical to concatenate
+     *
+     * @return a reference to the new Logical
+     *************************************************************************/
+    public Logical concat ( int dimension, Logical L ) {return null;}
+
 
     /**************************************************************************
      * Creates a string representation of the Logical for printing. Will only
@@ -159,6 +266,15 @@ public class Logical extends NDArray {
         return s.toString();
     }
 
+
+    /**************************************************************************
+     * Compares two Logical objects to check if they are equal in both
+     * dimension and data.
+     *
+     * @param L the other Logical to compare this one to
+     *
+     * @return  true if the two Logical objects are equal, false otherwise.
+     *************************************************************************/
     public boolean equals ( Logical L ) {
         if ( this == L )
             return true;
@@ -176,6 +292,11 @@ public class Logical extends NDArray {
         return true;
     }
 
+
+
+    /*Private Methods*/
+
+    // TODO
     private void resize ( int ...newDims ) {
         int newSize = 1;
         for ( int n : newDims )
