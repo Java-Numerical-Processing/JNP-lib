@@ -15,30 +15,82 @@ public abstract class NDArray {
 
     public abstract NDArray copy ( );
 
+    public abstract NDArray squeeze ( );
+
+    public abstract void resize ( int ...dimensions );
+
     public int sub2ind ( int ...sub ) {
+
         if ( sub.length != shape.length )
             throw new IllegalDimensionException(
-                "Number of subscript dimensions must match data dimensions."
+                "Number of subscripts must match data dimensions."
+            );
+
+        int ind = 0, prod = 1;
+        for ( int i = sub.length-1; i >= 0; --i ) {
+            ind += prod * sub[i];
+            prod *= shape[i];
+        }
+        return ind;
+    }
+
+    public int[] ind2sub ( int ind ) {
+        if ( ind < 0 )
+            throw new IllegalDimensionException(
+                "Index can not be less than 0."
+            );
+
+        int[] sub = new int[shape.length];
+        int s, prod = 1;
+        for ( int i = shape.length-1; i >= 0; --i ) {
+            s = ind % shape[i];
+            ind -= s;
+            ind /= shape[i];
+            sub[i] = s;
+        }
+
+        return sub;
+    };
+
+    public static int sub2ind ( int[] dimensions, int[] sub ) {
+
+        if ( sub.length != dimensions.length )
+            throw new IllegalDimensionException(
+                    "Number of subscripts must match data dimensions."
             );
 
         int ind = 0, prod = 1;
         for ( int i = sub.length-1; i >= 0; --i ) {
             try {
                 ind += prod * sub[i];
-                prod *= shape[i];
+                prod *= dimensions[i];
             } catch ( ArrayIndexOutOfBoundsException E ) {
                 throw new IllegalDimensionException(
-                    "Subscript " + sub[i] + " out of bounds for dimension " +
-                        i + " of length " + shape[i]
+                        "Subscript " + sub[i] + " out of bounds for dimension " +
+                                i + " of length " + dimensions[i]
                 );
             }
         }
         return ind;
     }
 
-    public int[] ind2sub ( int ind ) {
-        return null;
-    }
+    public static int[] ind2sub ( int[] dimensions, int ind ) {
+        if ( ind < 0 )
+            throw new IllegalDimensionException(
+                    "Index can not be less than 0."
+            );
+
+        int[] sub = new int[dimensions.length];
+        int s, prod = 1;
+        for ( int i = dimensions.length-1; i >= 0; --i ) {
+            s = ind % dimensions[i];
+            ind -= s;
+            ind /= dimensions[i];
+            sub[i] = s;
+        }
+
+        return sub;
+    };
 
     public int[] shape ( ) {
         int[] ret = new int[shape.length];

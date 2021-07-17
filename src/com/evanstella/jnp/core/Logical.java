@@ -21,19 +21,40 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Class constructor. Initialize a Logical from a boolean[]. Only a
+     * shallow copy of the array is made
+     *
+     * @param indata The array to initialize from
      *************************************************************************/
-    public Logical ( boolean[] indata ) {}
+    public Logical ( boolean[] indata ) {
+        data = indata;
+        shape = new int[]{ indata.length };
+    }
 
     /**************************************************************************
-     * TODO
+     * Class constructor. Initialize a Logical from a boolean[][]. Makes a
+     * a deep copy in order to aggregate the boolean[][] into a boolean[].
+     *
+     * @param indata The array to initialize from
      *************************************************************************/
-    public Logical ( boolean[][] indata ) {}
+    public Logical ( boolean[][] indata ) {
+        data = new boolean[indata.length * indata[0].length];
+        int ind = 0;
+        for ( boolean[] r : indata ) {
+            if ( r.length != indata[0].length )
+                throw new IllegalDimensionException(
+                    "Input dimensions must be consistent."
+                );
+            for ( boolean b : r )
+                data[ind++] = b;
+        }
+        shape = new int[]{ indata.length, indata[0].length };
+    }
 
     /**************************************************************************
      * Initializes a Logical with all true values.
      *
-     * @param dimensions The arbitrary dimensions for the N-D Logical.
+     * @param dimensions The dimensions for the N-D Logical.
      *
      * @return a reference the initialized Logical
      *************************************************************************/
@@ -47,7 +68,7 @@ public class Logical extends NDArray {
      * Initializes a Logical with all false values. Literally the same as
      * calling the constructor but here for completeness' sake.
      *
-     * @param dimensions the arbitrary dimensions for the N-D Logical.
+     * @param dimensions the dimensions for the N-D Logical.
      *
      * @return a reference the initialized Logical
      *************************************************************************/
@@ -56,7 +77,44 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Gets a reference to the raw data contained in the logical. Only
+     * Initializes a Logical with random true/false values using
+     * java.util.Random.
+     *
+     * @param dimensions the dimensions for the N-D Logical.
+     *
+     * @return a reference the initialized Logical
+     *************************************************************************/
+    public static Logical Rand ( int ...dimensions ) {
+        java.util.Random R = new java.util.Random( );
+        Logical L = new Logical( dimensions );
+
+        for ( int i = 0; i < L.data.length; i++ )
+            L.data[i] = R.nextBoolean();
+
+        return L;
+    }
+
+    /**************************************************************************
+     * Initializes a Logical with random true/false values using with a seed
+     * java.util.Random.
+     *
+     * @param seed       the PRNG seed.
+     * @param dimensions the dimensions for the N-D Logical.
+     *
+     * @return a reference the initialized Logical
+     *************************************************************************/
+    public static Logical Rand ( long seed,  int ...dimensions ) {
+        java.util.Random R = new java.util.Random( seed );
+        Logical L = new Logical( dimensions );
+
+        for ( int i = 0; i < L.data.length; i++ )
+            L.data[i] = R.nextBoolean();
+
+        return L;
+    }
+
+    /**************************************************************************
+     * Gets a reference to the raw data contained in the Logical. Only
      * recommended if you need fast access to the data in the object.
      *
      * @return a reference to the Logical data.
@@ -74,8 +132,13 @@ public class Logical extends NDArray {
      * @param indata    the data to set
      * @param sub       the subscript at which to set the data
      *************************************************************************/
-    public void setFast ( boolean indata, int ...sub ) {
+    public void set ( boolean indata, int ...sub ) {
         int ind = sub2ind( sub );
+        if ( ind >= data.length ) {
+            throw new IllegalDimensionException(
+                "Subscript out of bounds for dimensions"
+            );
+        }
         data[ind] = indata;
     }
 
@@ -87,52 +150,33 @@ public class Logical extends NDArray {
      * @param indata    the data to set
      * @param ind       the index at which to set the data
      *************************************************************************/
-    public void setFast ( boolean indata, int ind ) {
+    public void set ( boolean indata, int ind ) {
         data[ind] = indata;
     }
 
     /**************************************************************************
-     * TODO
      * Sets the value of the data at the subscript with the inputted value. If
      * the subscript is out of bounds of the data dimensions, the data will be
-     * resized, this can be undesirable on larger data sets as this
+     * resized. This can be slower on larger data sets as this
      * this operation is O(n) for data of size n.
      *
      * @param indata    the data to set
      * @param sub       the subscript at which to set the data
      *************************************************************************/
-    public void set ( boolean indata, int ...sub ) {
-        int ind;
-        try {
+    public void setAt ( boolean indata, int ...sub ) {
+        int ind = sub2ind( sub );
+        if ( ind >= data.length ) {
+            int[] newDims = new int[shape.length];
+            for ( int i = 0; i < shape.length; i++ ) {
+                if ( shape[i] > sub[i] )
+                    newDims[i] = shape[i];
+                else
+                    newDims[i] = sub[i] + 1;
+            }
+            resizeNoCheck( newDims );
             ind = sub2ind( sub );
-        } catch( IllegalDimensionException E ) {
-            if ( sub.length != shape.length )
-                throw new IllegalDimensionException(
-                        "Number of subscript dimensions must match data dimensions."
-                );
-            /*TODO*/
-            throw new IllegalDimensionException("TODO");
         }
         data[ind] = indata;
-    }
-
-    /**************************************************************************
-     * TODO
-     * Sets the value of the data at the index with the inputted value. If
-     * the index is out of bounds of the data dimensions, the data will be
-     * resized; this can be undesirable on larger data sets as this
-     * this operation is O(n) for data of size n.
-     *
-     * @param indata    the data to set
-     * @param ind       the index at which to set the data
-     *************************************************************************/
-    public void set ( boolean indata, int ind ) {
-        try {
-            data[ind] = indata;
-        } catch( ArrayIndexOutOfBoundsException E ) {
-            /*TODO*/
-            throw new IllegalDimensionException("TODO");
-        }
     }
 
     /**************************************************************************
@@ -192,7 +236,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * flattens the Logical to one dimension, not changing any of the data.
+     * flattens the Logical to one dimension without changing any of the data.
      *
      * @return a reference to the flattened Logical
      *************************************************************************/
@@ -212,6 +256,50 @@ public class Logical extends NDArray {
         Logical copy = new Logical( this.shape );
         System.arraycopy( data, 0, copy.data, 0, data.length );
         return copy;
+    }
+
+    /**************************************************************************
+     * TODO
+     *
+     * @return a reference to the copied object
+     *************************************************************************/
+    public Logical squeeze ( ) {
+        return null;
+    }
+
+    /**************************************************************************
+     * Resizes the array containing the Logical data while keeping data in its
+     * current subscribed position.
+     *
+     * Should be done infrequently as this requires copy each element to a
+     * new array. There is also a little overhead associated with calculating
+     * the new element indices. Elements in newly allocated space are
+     * initialized to 0 (false)
+     *
+     * @param dimensions The new dimensions for the data
+     *************************************************************************/
+    public void resize ( int ...dimensions ) {
+        for ( int i = 0; i < shape.length; i++ )
+            if ( shape[i] > dimensions[i] )
+                throw new IllegalDimensionException(
+                    "Resized dimensions must be greater than current dimensions"
+                );
+
+        int newSize = 1;
+        for ( int n : dimensions )
+            newSize *= n;
+        boolean[] newData = new boolean[newSize];
+
+        int[] sub;
+        int newInd;
+        for ( int i = 0; i < data.length; i++ ) {
+            sub = ind2sub( shape, i );
+            newInd = sub2ind( dimensions, sub );
+            newData[newInd] = data[i];
+        }
+
+        data = newData;
+        shape = dimensions;
     }
 
     /**************************************************************************
@@ -278,16 +366,25 @@ public class Logical extends NDArray {
 
 
     /**************************************************************************
-     * Private Methods
+     * Internal Methods
      *************************************************************************/
 
-    // TODO
-    private void resize ( int ...newDims ) {
+    /*Resize data without checking dimensions. Faster; ensure valid inputs*/
+    protected void resizeNoCheck ( int ...dimensions ) {
         int newSize = 1;
-        for ( int n : newDims )
+        for ( int n : dimensions )
             newSize *= n;
         boolean[] newData = new boolean[newSize];
-        /*TODO*/
+
+        int[] sub;
+        int newInd;
+        for ( int i = 0; i < data.length; i++ ) {
+            sub = ind2sub( shape, i );
+            newInd = sub2ind( dimensions, sub );
+            newData[newInd] = data[i];
+        }
+
         data = newData;
+        shape = dimensions;
     }
 }
