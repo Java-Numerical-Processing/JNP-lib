@@ -157,6 +157,7 @@ public class Numeric extends NDArray {
     public static Numeric RandComplex ( int ...dimensions ) {
         java.util.Random R = new java.util.Random( );
         Numeric N = new Numeric( dimensions );
+        N.dataImag = new double[N.dataReal.length];
 
         for ( int i = 0; i < N.dataReal.length; i++ ) {
             N.dataReal[i] = R.nextDouble();
