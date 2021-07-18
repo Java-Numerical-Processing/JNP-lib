@@ -1,5 +1,6 @@
 package com.evanstella.jnp.core;
 
+
 public class Logical extends NDArray {
 
     protected boolean[] data;
@@ -179,12 +180,10 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
-    /**************************************************************************
-     * TODO
-     *************************************************************************/
-    public Logical get ( ) {
-        return null;
-    }
+    /*TODO*/
+    public boolean get ( int... sub ) {return false;}
+    public boolean get ( int ind ) {return false;}
+
 
     /**************************************************************************
      * Reshapes the Logical by simply changing the dimensions, not the data.
@@ -210,7 +209,7 @@ public class Logical extends NDArray {
 
     /**************************************************************************
      * Transposes the Logical. Only defined for Matrices (<3 dimensions); any
-     * input of higher dimension than 2 will cause an exception
+     * input of a higher dimension than 2 will cause an exception
      *
      * @return a reference to the transposed data.
      *************************************************************************/
@@ -271,7 +270,7 @@ public class Logical extends NDArray {
      * Resizes the array containing the Logical data while keeping data in its
      * current subscribed position.
      *
-     * Should be done infrequently as this requires copy each element to a
+     * Should be done infrequently as this requires copying each element to a
      * new array. There is also a little overhead associated with calculating
      * the new element indices. Elements in newly allocated space are
      * initialized to 0 (false)
@@ -300,6 +299,41 @@ public class Logical extends NDArray {
 
         data = newData;
         shape = dimensions;
+    }
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public Logical slice ( int[] ...dimensions ) {
+        if ( dimensions.length != shape.length )
+            throw new IllegalDimensionException(
+                "Number of slice dimensions must match number of data dimensions");
+        int[] newShape = new int[shape.length];
+        int size = 1;
+        for ( int i = 0; i < shape.length; i++ ) {
+            int[] dim = dimensions[i];
+            if ( dim.length == 1 )
+                newShape[i] = 1;
+            else if ( dim.length == 2 ) {
+                if ( dim[1] > shape[i] )
+                    throw new IllegalDimensionException(
+                        "Slice index " + dim[1] + " out of bounds of dimension " + i);
+                newShape[i] = dim[1] - dim[0];
+                size *= (dim[1] - dim[0]);
+            }
+            else
+                throw new IllegalDimensionException(
+                    "Slice indices must be a single index or two values");
+            if ( newShape[i] < 1 )
+                throw new IllegalDimensionException(
+                    "Slice indices must be positive");
+        }
+
+        boolean[] newData = sliceData( dimensions, newShape, size );
+
+        Logical sliced = new Logical( newShape );
+        sliced.data = newData;
+        return sliced;
     }
 
     /**************************************************************************
@@ -366,10 +400,10 @@ public class Logical extends NDArray {
 
 
     /**************************************************************************
-     * Internal Methods
+     *                        Internal Methods
      *************************************************************************/
 
-    /*Resize data without checking dimensions. Faster; ensure valid inputs*/
+    /* Resize data without checking dimensions. */
     protected void resizeNoCheck ( int ...dimensions ) {
         int newSize = 1;
         for ( int n : dimensions )
@@ -387,4 +421,50 @@ public class Logical extends NDArray {
         data = newData;
         shape = dimensions;
     }
+
+    /* Moved this to its own function bc slice was getting a little long */
+    protected boolean[] sliceData ( int[][] dims, int[] newShape, int size ) {
+        // get first subscript in the slice
+        int[] sub = new int[shape.length];
+        int ind = 0;
+        for ( int[] dim : dims )
+            sub[ind++] = dim[0];
+
+        // get the last subscript in the slice
+        int[] subLast = new int[shape.length];
+        ind = 0;
+        for ( int[] dim : dims ) {
+            if ( dim.length == 1 )
+                subLast[ind++] = dim[0];
+            else
+                subLast[ind++] = dim[1]-1;
+        }
+
+        // start at first subscript, get all elements that fall in the slice
+        boolean[] newData = new boolean[size];
+        int startInd = sub2indNoCheck( shape, sub );
+        int endInd = sub2indNoCheck( shape, subLast );
+        ind = 0;
+        newData[ind++] = data[startInd];
+        for ( int i = startInd+1; i < endInd; i++ ) {
+            sub = ind2subNoCheck( shape, i );
+            boolean add = true;
+            for ( int j = 0; j < shape.length; j++ ) {
+                if ( dims[j].length == 1 && sub[j] != dims[j][0] ) {
+                    add = false;
+                    break;
+                } else if ( dims[j].length == 2 &&
+                          (sub[j] < dims[j][0] || sub[j] >= dims[j][1]) ) {
+                    add = false;
+                    break;
+                }
+            }
+            if ( add )
+                newData[ind++] = data[i];
+        }
+        if ( startInd != endInd )
+            newData[ind] = data[endInd];
+        return newData;
+    }
+
 }

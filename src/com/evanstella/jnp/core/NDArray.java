@@ -5,20 +5,59 @@ public abstract class NDArray {
     protected int[] shape;
 
 
-    public abstract NDArray get ( );
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public abstract NDArray slice ( int[] ...dimensions );
 
+    /**************************************************************************
+     * Reshapes the NDArray by simply changing the dimensions, not the data.
+     * This means the output will still be in row-major order and the
+     * dimensions must satisfy the requirement that the number of elements
+     * must not change.
+     *************************************************************************/
     public abstract NDArray reshape ( int ...dimensions );
 
+    /**************************************************************************
+     * Transposes the NDArray. Only defined for Matrices (<3 dimensions); any
+     * input of a higher dimension than 2 will cause an exception
+     *************************************************************************/
     public abstract NDArray transpose ( );
 
+    /**************************************************************************
+     * flattens the NDArray to one dimension without changing any of the data.
+     *************************************************************************/
     public abstract NDArray flatten ( );
 
+    /**************************************************************************
+     * Creates a deep copy of this NDArray object and returns a reference to
+     * the copy.
+     *************************************************************************/
     public abstract NDArray copy ( );
 
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
     public abstract NDArray squeeze ( );
 
+    /**************************************************************************
+     * Resizes the array containing the data while keeping data in its
+     * current subscripted position.
+     *
+     * Should be done infrequently as this requires copying each element to a
+     * new array. There is also a little overhead associated with calculating
+     * the new element indices. Elements in newly allocated space are
+     * initialized to 0
+     *************************************************************************/
     public abstract void resize ( int ...dimensions );
 
+    /**************************************************************************
+     * Converts the inputted subscript to a linear index for this NDArray
+     *
+     * @param sub the subscript to calculate the index for
+     *
+     * @return the calculated linear index
+     *************************************************************************/
     public int sub2ind ( int ...sub ) {
 
         if ( sub.length != shape.length )
@@ -34,6 +73,13 @@ public abstract class NDArray {
         return ind;
     }
 
+    /**************************************************************************
+     * Converts the inputted linear index to a subscript for this NDArray
+     *
+     * @param ind the index to calculate the subscript for
+     *
+     * @return the calculated subscript
+     *************************************************************************/
     public int[] ind2sub ( int ind ) {
         if ( ind < 0 )
             throw new IllegalDimensionException(
@@ -52,32 +98,43 @@ public abstract class NDArray {
         return sub;
     };
 
+    /**************************************************************************
+     * Converts the inputted subscript to a linear index an NDArray with the
+     * inputted dimensions
+     *
+     * @param dimensions    the dimensions to calculate for
+     * @param sub           the subscript to calculate the index for
+     *
+     * @return the calculated index
+     *************************************************************************/
     public static int sub2ind ( int[] dimensions, int[] sub ) {
 
         if ( sub.length != dimensions.length )
             throw new IllegalDimensionException(
-                    "Number of subscripts must match data dimensions."
+                "Number of subscripts must match data dimensions."
             );
 
         int ind = 0, prod = 1;
         for ( int i = sub.length-1; i >= 0; --i ) {
-            try {
-                ind += prod * sub[i];
-                prod *= dimensions[i];
-            } catch ( ArrayIndexOutOfBoundsException E ) {
-                throw new IllegalDimensionException(
-                        "Subscript " + sub[i] + " out of bounds for dimension " +
-                                i + " of length " + dimensions[i]
-                );
-            }
+            ind += prod * sub[i];
+            prod *= dimensions[i];
         }
         return ind;
     }
 
+    /**************************************************************************
+     * Converts the inputted linear index to a subscript for an NDArray with
+     * the inputted dimensions
+     *
+     * @param dimensions    the dimensions to calculate for
+     * @param ind           the index to calculate the subscript for
+     *
+     * @return the calculated subscript
+     *************************************************************************/
     public static int[] ind2sub ( int[] dimensions, int ind ) {
         if ( ind < 0 )
             throw new IllegalDimensionException(
-                    "Index can not be less than 0."
+                "Index can not be less than 0."
             );
 
         int[] sub = new int[dimensions.length];
@@ -92,12 +149,20 @@ public abstract class NDArray {
         return sub;
     };
 
+    /**************************************************************************
+     * Returns the shape of the NDArray
+     *
+     * @return a copy of this.shape
+     *************************************************************************/
     public int[] shape ( ) {
         int[] ret = new int[shape.length];
         System.arraycopy( shape, 0, ret, 0, shape.length );
         return ret;
     }
 
+    /**************************************************************************
+     * Overrides Object.toString()
+     *************************************************************************/
     public String toString ( ) {
         StringBuilder s = new StringBuilder();
         if ( shape.length == 1 )
@@ -108,5 +173,34 @@ public abstract class NDArray {
         s.append(shape[shape.length - 1]).append(" Array");
         return s.toString();
     }
+
+
+    /**************************************************************************
+     * Internal Methods
+     *************************************************************************/
+
+    /* sub2ind with no dimension checking */
+    protected static int sub2indNoCheck ( int[] dimensions, int[] sub ) {
+        int ind = 0, prod = 1;
+        for ( int i = sub.length-1; i >= 0; --i ) {
+            ind += prod * sub[i];
+            prod *= dimensions[i];
+        }
+        return ind;
+    }
+
+    /* ind2sub with no dimension checking */
+    protected static int[] ind2subNoCheck ( int[] dimensions, int ind ) {
+        int[] sub = new int[dimensions.length];
+        int s, prod = 1;
+        for ( int i = dimensions.length-1; i >= 0; --i ) {
+            s = ind % dimensions[i];
+            ind -= s;
+            ind /= dimensions[i];
+            sub[i] = s;
+        }
+
+        return sub;
+    };
 
 }
