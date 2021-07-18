@@ -414,7 +414,11 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Find the index of the max value in the data. Only compares the real
+     * component of the data since comparisons between complex numbers are not
+     * well defined.
+     *
+     * @return the linear index of the max value in the data
      *************************************************************************/
     public int findMax ( ) {
         double max = dataReal[0];
@@ -429,7 +433,11 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Find the index of the absolute max value in the data. Only compares the
+     * real component of the data since comparisons between complex numbers are
+     * not well defined.
+     *
+     * @return the linear index of the max value in the data
      *************************************************************************/
     public int findAbsMax ( ) {
         double max = dataReal[0];
@@ -440,6 +448,47 @@ public class Numeric extends NDArray {
             absVal = (tmp <= 0.0) ? 0.0 - tmp : tmp;
             if ( absVal > max) {
                 max = absVal;
+                ind = i;
+            }
+        }
+        return ind;
+    }
+
+    /**************************************************************************
+     * Find the index of the min value in the data. Only compares the real
+     * component of the data since comparisons between complex numbers are not
+     * well defined.
+     *
+     * @return the linear index of the min value in the data
+     *************************************************************************/
+    public int findMin ( ) {
+        double min = dataReal[0];
+        int ind = 0;
+        for ( int i = 0; i < dataReal.length; i++ ) {
+            if ( dataReal[i] < min) {
+                min = dataReal[i];
+                ind = i;
+            }
+        }
+        return ind;
+    }
+
+    /**************************************************************************
+     * Find the index of the absolute min value in the data. Only compares the
+     * real component of the data since comparisons between complex numbers are
+     * not well defined.
+     *
+     * @return the linear index of the min value in the data
+     *************************************************************************/
+    public int findAbsMin ( ) {
+        double min = dataReal[0];
+        double absVal, tmp;
+        int ind = 0;
+        for ( int i = 0; i < dataReal.length; i++ ) {
+            tmp = dataReal[i];
+            absVal = (tmp <= 0.0) ? 0.0 - tmp : tmp;
+            if ( absVal < min) {
+                min = absVal;
                 ind = i;
             }
         }
@@ -691,10 +740,8 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Creates a string representation of the Logical for printing. Will only
+     * Creates a string representation of the Numeric for printing. Will only
      * show actual data for 1 and 2 dimensional data as higher dimensional
-     *
-     *
      * data is difficult to display well in a string.
      *
      * @return a string representation of the Logical
@@ -759,12 +806,13 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Compares two Logical objects to check if they are equal in both
-     * dimension and data.
+     * Compares two Numeric objects to check if they are equal in both
+     * dimension and data. NOT RECOMMENDED when dealing with arithmetic because
+     * of the possibility of precision issues. Use equalTolerance() instead.
      *
-     * @param N the other Logical to compare this one to
+     * @param N the other Numeric to compare this one to
      *
-     * @return  true if the two Logical objects are equal, false otherwise.
+     * @return  true if the two Numeric objects are equal, false otherwise.
      *************************************************************************/
     public boolean equals ( Numeric N ) {
         if ( this == N )
@@ -792,7 +840,14 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Compares two Numeric objects to check if they are equal with a
+     * tolerance
+     *
+     * @param N         the other Numeric to compare to
+     * @param tolerance the tolerance for the difference between two
+     *                  corresponding data in the two Numerics
+     *
+     * @return true if the two Numerics are equal to the specified tolerance
      *************************************************************************/
     public boolean equalsTolerance ( Numeric N, double tolerance ) {
         if ( this == N )
@@ -809,11 +864,18 @@ public class Numeric extends NDArray {
         else if ( !isComplex && N.dataImag != null )
             return false;
 
+        double diff;
         for ( int i = 0; i < dataReal.length; i++ ) {
-            if ( this.dataReal[i] != N.dataReal[i] )
+            diff = this.dataReal[i] - N.dataReal[i];
+            diff = (diff <= 0.0) ? 0.0 - diff : diff; // get abs value
+            if ( diff > tolerance )
                 return false;
-            if ( isComplex && this.dataImag[i] != N.dataImag[i] )
-                return false;
+            if ( isComplex ) {
+                diff = this.dataImag[i] - N.dataImag[i];
+                diff = (diff <= 0.0) ? 0.0 - diff : diff;
+                if (diff > tolerance)
+                    return false;
+            }
         }
 
         return true;
@@ -909,7 +971,7 @@ public class Numeric extends NDArray {
         return new double[][]{ newDataReal, newDataImag };
     }
 
-    /* TODO */
+    /* copy this objects data into dest */
     protected void copyData ( Numeric dest ) {
         System.arraycopy(
             dataReal, 0, dest.dataReal, 0, dataReal.length );
