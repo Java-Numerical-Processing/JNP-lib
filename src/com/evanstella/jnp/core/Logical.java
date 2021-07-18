@@ -313,7 +313,7 @@ public class Logical extends NDArray {
 
     /**************************************************************************
      * Resizes the array containing the Logical data while keeping data in its
-     * current subscribed position.
+     * current subscripted position.
      *
      * Should be done infrequently as this requires copying each element to a
      * new array. There is also a little overhead associated with calculating
