@@ -376,6 +376,9 @@ public class Logical extends NDArray {
                 if ( dim[1] > shape[i] )
                     throw new IllegalDimensionException(
                         "Slice index " + dim[1] + " out of bounds of dimension " + i);
+                if ( dim[0] >= dim[1] )
+                    throw new IllegalDimensionException(
+                        "Slice index 1 must be greater than index 2 for dimension " + i);
                 newShape[i] = dim[1] - dim[0];
                 size *= (dim[1] - dim[0]);
             }
