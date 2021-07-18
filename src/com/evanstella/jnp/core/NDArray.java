@@ -6,11 +6,6 @@ public abstract class NDArray {
 
 
     /**************************************************************************
-     * TODO
-     *************************************************************************/
-    public abstract NDArray slice ( int[] ...dimensions );
-
-    /**************************************************************************
      * Reshapes the NDArray by simply changing the dimensions, not the data.
      * This means the output will still be in row-major order and the
      * dimensions must satisfy the requirement that the number of elements
@@ -25,6 +20,24 @@ public abstract class NDArray {
     public abstract NDArray transpose ( );
 
     /**************************************************************************
+     * Slices the data into a sub NDArray
+     *
+     * @param dimensions    An int[] for each dimension, e.i. if the data is 3
+     *                      dimensional, inputs would be int[],int[],int[]
+     *                      (or int[3][]). Each int[] should have either one
+     *                      value (int[]{n}) specifying the nth index of the
+     *                      dimension, or two values specifying a range of
+     *                      values (int[]{0,4}: inclusive, exclusive).
+     *
+     *                      Example: for a 5x5 matrix:
+     *                      slice(new int{0,5}, new int{2}) returns the 3rd
+     *                      column of the matrix.
+     *
+     * @return a reference to the sliced NDArray.
+     *************************************************************************/
+    public abstract NDArray slice ( int[] ...dimensions );
+
+    /**************************************************************************
      * flattens the NDArray to one dimension without changing any of the data.
      *************************************************************************/
     public abstract NDArray flatten ( );
@@ -36,7 +49,12 @@ public abstract class NDArray {
     public abstract NDArray copy ( );
 
     /**************************************************************************
-     * TODO
+     * Returns an NDArray with all dimensions of length 1 removed. If the
+     * resulting data is one dimensional, the resulting object will be a row
+     * vector (1xN) if the first dimension (row) was length 1, and a column
+     * vector (Nx1) otherwise.
+     *
+     * @return a reference to the squeezed NDArray.
      *************************************************************************/
     public abstract NDArray squeeze ( );
 
@@ -176,7 +194,7 @@ public abstract class NDArray {
 
 
     /**************************************************************************
-     * Internal Methods
+     *                          Internal Methods
      *************************************************************************/
 
     /* sub2ind with no dimension checking */

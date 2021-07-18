@@ -180,10 +180,34 @@ public class Logical extends NDArray {
         data[ind] = indata;
     }
 
-    /*TODO*/
-    public boolean get ( int... sub ) {return false;}
-    public boolean get ( int ind ) {return false;}
+    /**************************************************************************
+     * Returns the data at the inputted subscript.
+     *
+     * @param sub   the subscript to retrieve data at
+     *
+     * @return the value at the subscript
+     *************************************************************************/
+    public boolean get ( int... sub ) {
+        int ind = sub2ind( shape, sub );
+        if ( ind >= data.length )
+            throw new IllegalDimensionException(
+                "Subscript out of range of data dimensions");
+        return data[ind];
+    }
 
+    /**************************************************************************
+     * Returns the data at the inputted linear index.
+     *
+     * @param ind   the linear index to retrieve data at
+     *
+     * @return the value at the linear index
+     *************************************************************************/
+    public boolean get ( int ind ) {
+        if ( ind >= data.length )
+            throw new IllegalDimensionException(
+                "Index out of range of data size");
+        return data[ind];
+    }
 
     /**************************************************************************
      * Reshapes the Logical by simply changing the dimensions, not the data.
@@ -258,12 +282,33 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Returns a Logical with all dimensions of length 1 removed. If the
+     * resulting data is one dimensional, the resulting object will be a row
+     * vector (1xN) if the first dimension (row) was length 1, and a column
+     * vector (Nx1) otherwise.
      *
-     * @return a reference to the copied object
+     * @return a reference to the squeezed Logical.
      *************************************************************************/
     public Logical squeeze ( ) {
-        return null;
+        int newSize = 0;
+        for ( int n : shape ) {
+            if (n > 1) newSize++;
+        }
+        boolean makeColumn = false;
+        if ( shape[0] != 1 && newSize == 1 ) {
+            makeColumn = true;
+            newSize++;
+        }
+        int[] newShape = new int[newSize];
+        int ind = 0;
+        for ( int n : shape ) {
+            if (n > 1) newShape[ind++] = n;
+        }
+        if ( makeColumn )
+            newShape[ind] = 1;
+        Logical squeezed = new Logical( newShape );
+        System.arraycopy( data, 0, squeezed.data, 0, data.length );
+        return squeezed;
     }
 
     /**************************************************************************
@@ -302,7 +347,20 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Slices the data into a sub Logical
+     *
+     * @param dimensions    An int[] for each dimension, e.i. if the data is 3
+     *                      dimensional, inputs would be int[],int[],int[]
+     *                      (or int[3][]). Each int[] should have either one
+     *                      value (int[]{n}) specifying the nth index of the
+     *                      dimension, or two values specifying a range of
+     *                      values (int[]{0,4}: inclusive, exclusive).
+     *
+     *                      Example: for a 5x5 matrix:
+     *                      slice(new int{0,5}, new int{2}) returns the 3rd
+     *                      column of the matrix.
+     *
+     * @return a reference to the sliced Logical.
      *************************************************************************/
     public Logical slice ( int[] ...dimensions ) {
         if ( dimensions.length != shape.length )
@@ -337,18 +395,49 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Concatenate the inputted Logical to the end of this Logical. Note that
+     * the number of dimensions and the dimensions lengths, except for the
+     * dimension being concatenated along, must be equal.
      *
      * @param dimension the dimension to concatenate along
      * @param L         the Logical to concatenate
      *
      * @return a reference to the new Logical
      *************************************************************************/
-    public Logical concat ( int dimension, Logical L ) {return null;}
+    public Logical concat ( int dimension, Logical L ) {
+        if ( dimension >= shape.length )
+            throw new IllegalDimensionException(
+                "Logical does not have " + (dimension+1) + " dimensions.");
+        if ( shape.length != L.shape.length )
+            throw new IllegalDimensionException(
+                "Both objects must have the same number of dimensions.");
+        for ( int i = 0; i < shape.length; i++ ) {
+            if ( i != dimension && shape[i] != L.shape[i] )
+                throw new IllegalDimensionException(
+                "All dimensions but the concat dimension must be equal in length.");
+        }
+
+        Logical catted = this.copy( );
+        int[] newShape = catted.shape( );
+        newShape[dimension] = shape[dimension] + L.shape[dimension];
+        catted.resizeNoCheck( newShape );
+        int[] sub;
+        int ind;
+        for ( int i = 0; i < L.data.length; i++ ) {
+            sub = ind2subNoCheck( L.shape, i );
+            sub[dimension] += shape[dimension];
+            ind = sub2indNoCheck( newShape, sub );
+            catted.data[ind] = L.data[i];
+        }
+
+        return catted;
+    }
 
     /**************************************************************************
      * Creates a string representation of the Logical for printing. Will only
      * show actual data for 1 and 2 dimensional data as higher dimensional
+     *
+     *
      * data is difficult to display well in a string.
      *
      * @return a string representation of the Logical
@@ -356,10 +445,14 @@ public class Logical extends NDArray {
     public String toString ( ) {
         StringBuilder s = new StringBuilder(super.toString() + " <Logical>\n");
         if ( shape.length < 3 ) {
-            int row = shape[0];
-            int col = 1;
-            if ( shape.length == 2 )
+            int row, col;
+            if ( shape.length == 2 ) {
+                row = shape[0];
                 col = shape[1];
+            } else {
+                row = 1;
+                col = shape[0];
+            }
             for ( int i = 0; i < row; i++ ) {
                 s.append("[ ");
                 for ( int j = 0; j < col; j++ ) {
@@ -400,7 +493,7 @@ public class Logical extends NDArray {
 
 
     /**************************************************************************
-     *                        Internal Methods
+     *                          Internal Methods
      *************************************************************************/
 
     /* Resize data without checking dimensions. */
