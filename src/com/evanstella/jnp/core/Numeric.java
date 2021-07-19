@@ -1,5 +1,6 @@
 package com.evanstella.jnp.core;
 
+import com.evanstella.jnp.math.Element;
 
 public class Numeric extends NDArray {
 
@@ -178,12 +179,12 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public static Numeric Rand ( long seed,  int ...dimensions ) {
         java.util.Random R = new java.util.Random( seed );
-        Numeric L = new Numeric( dimensions );
+        Numeric N = new Numeric( dimensions );
 
-        for ( int i = 0; i < L.dataReal.length; i++ )
-            L.dataReal[i] = R.nextDouble();
+        for ( int i = 0; i < N.dataReal.length; i++ )
+            N.dataReal[i] = R.nextDouble();
 
-        return L;
+        return N;
     }
 
     /**************************************************************************
@@ -205,6 +206,37 @@ public class Numeric extends NDArray {
         }
 
         return N;
+    }
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public static Numeric LinSpace ( double start, double end, int numPts ) {
+        Numeric linspace = new Numeric( 1, numPts );
+        double[] data = linspace.dataReal;
+
+        double step = ( end - start ) / (numPts-1);
+        double val = start;
+        int ind = 0;
+        while ( ind < numPts ) {
+            data[ind++] = val;
+            val += step;
+        }
+        return linspace;
+    }
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public static Numeric GeoSpace ( double start, double end, int numPts ) {
+        return null;
+    }
+
+    /**************************************************************************
+     * TODO
+     *************************************************************************/
+    public static Numeric LogSpace ( double start, double end, int numPts ) {
+        return Element.pow( 10, LinSpace( start, end, numPts) );
     }
 
     /**************************************************************************
