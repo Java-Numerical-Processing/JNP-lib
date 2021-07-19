@@ -28,6 +28,7 @@ public class Numeric extends NDArray {
         dataImag = null;
     }
 
+
     /**************************************************************************
      * <p>Class constructor. Initialize a Numeric from a double[]. Only a
      * shallow copy of the array is made
@@ -133,6 +134,29 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public static Numeric Zeros ( int ...dimensions ) {
         return new Numeric( dimensions );
+    }
+
+    /**************************************************************************
+     * <p>Initializes a 1x1 scalar Numeric with the inputted real data.
+     *
+     * @param real   the real scalar
+     *
+     * @return a reference the initialized Numeric
+     *************************************************************************/
+    public static Numeric Scalar ( double real ) {
+        return new Numeric( new double[]{real} );
+    }
+
+    /**************************************************************************
+     * <p>Initializes a 1x1 scalar Numeric with the inputted complex data.
+     *
+     * @param real   the real component of the scalar
+     * @param imag   the imaginary component of the scalar
+     *
+     * @return a reference the initialized Numeric
+     *************************************************************************/
+    public static Numeric Scalar ( double real, double imag ) {
+        return new Numeric( new double[]{real}, new double[]{imag} );
     }
 
     /**************************************************************************
@@ -310,6 +334,13 @@ public class Numeric extends NDArray {
                 result.dataImag[ind] = N.dataImag[i];
         }
         return result;
+    }
+
+    /**************************************************************************
+     * <p>Check whether this Numeric is a scalar (size of 1)
+     *************************************************************************/
+    public boolean isScalar ( ) {
+        return dataReal.length == 1;
     }
 
     /**************************************************************************
@@ -568,65 +599,45 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * <p>Returns the real component of the data at the inputted subscript.
+     * <p>Returns a scalar numeric with the value at the inputted subscript.
      *
      * @param sub   the subscript to retrieve data at
      *
-     * @return the value at the subscript
+     * @return a reference to the initialized scalar.
      *************************************************************************/
-    public double getReal ( int... sub ) {
+    public Numeric get ( int... sub ) {
         int ind = sub2ind( shape, sub );
         if ( ind >= dataReal.length )
             throw new IllegalDimensionException(
                 "Subscript out of range of data dimensions");
-        return dataReal[ind];
+
+        Numeric ret = new Numeric( 1,1 );
+        ret.dataReal[0] = dataReal[ind];
+        if ( dataImag != null ) {
+            ret.dataImag = new double[]{ dataImag[ind] };
+        }
+        return ret;
     }
 
     /**************************************************************************
-     * <p>Returns the imaginary component of the data at the inputted subscript.
+     * <p>Returns a scalar numeric with the value at the inputted linear
+     * index.
      *
-     * @param sub   the subscript to retrieve data at
+     * @param ind   the linear index to retrieve data at
      *
-     * @return the value at the subscript
+     * @return a reference to the initialized scalar.
      *************************************************************************/
-    public double getImag ( int... sub ) {
-        if ( dataImag == null )
-            return 0.0;
-        int ind = sub2ind( shape, sub );
+    public Numeric get ( int ind ) {
         if ( ind >= dataReal.length )
             throw new IllegalDimensionException(
                 "Subscript out of range of data dimensions");
-        return dataImag[ind];
-    }
 
-    /**************************************************************************
-     * <p>Returns the real component of the data at the inputted linear index.
-     *
-     * @param ind   the linear index to retrieve data at
-     *
-     * @return the value at the linear index
-     *************************************************************************/
-    public double getReal ( int ind ) {
-        if ( ind >= dataReal.length )
-            throw new IllegalDimensionException(
-                "Index out of range of data size");
-        return dataReal[ind];
-    }
-
-    /**************************************************************************
-     * <p>Returns the imaginary component of the data at the inputted linear index.
-     *
-     * @param ind   the linear index to retrieve data at
-     *
-     * @return the value at the linear index
-     *************************************************************************/
-    public double getImag ( int ind ) {
-        if ( dataImag == null )
-            return 0.0;
-        if ( ind >= dataReal.length )
-            throw new IllegalDimensionException(
-                "Index out of range of data size");
-        return dataReal[ind];
+        Numeric ret = new Numeric( 1,1 );
+        ret.dataReal[0] = dataReal[ind];
+        if ( dataImag != null ) {
+            ret.dataImag = new double[]{ dataImag[ind] };
+        }
+        return ret;
     }
 
     /**************************************************************************
