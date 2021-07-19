@@ -20,6 +20,10 @@ public class Numeric extends NDArray {
         int size = 1;
         for ( int n : dimensions )
             size *= n;
+        if ( size < 1 )
+            throw new IllegalDimensionException(
+                "Dimension lengths must be positive and non-zero."
+            );
         dataReal = new double[size];
         dataImag = null;
     }
@@ -199,6 +203,7 @@ public class Numeric extends NDArray {
     public static Numeric RandComplex ( long seed,  int ...dimensions ) {
         java.util.Random R = new java.util.Random( seed );
         Numeric N = new Numeric( dimensions );
+        N.dataImag = new double[N.dataReal.length];
 
         for ( int i = 0; i < N.dataReal.length; i++ ) {
             N.dataReal[i] = R.nextDouble();
@@ -209,7 +214,13 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
+     * Initializes a row vector of linearly spaced elements.
+     *
+     * @param start     the value of the first element
+     * @param end       the value of the last element
+     * @param numPts    the number of points to sample
+     *
+     * @return A Numeric of linearly space elements.
      *************************************************************************/
     public static Numeric LinSpace ( double start, double end, int numPts ) {
         Numeric linspace = new Numeric( 1, numPts );
@@ -226,17 +237,79 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * TODO
-     *************************************************************************/
-    public static Numeric GeoSpace ( double start, double end, int numPts ) {
-        return null;
-    }
-
-    /**************************************************************************
-     * TODO
+     * Initializes a row vector of logarithmically (base 10) spaced elements.
+     *
+     * @param start     the value of the first element
+     * @param end       the value of the last element
+     * @param numPts    the number of points to sample
+     *
+     * @return A Numeric of logarithmically space elements.
      *************************************************************************/
     public static Numeric LogSpace ( double start, double end, int numPts ) {
         return Element.pow( 10, LinSpace( start, end, numPts) );
+    }
+
+    /**************************************************************************
+     * Initializes a row vector of logarithmically spaced elements.
+     *
+     * @param b         the base of the log scale
+     * @param s         the value of the first element
+     * @param end       the value of the last element
+     * @param pts       the number of points to sample
+     *
+     * @return A Numeric of logarithmically space elements.
+     *************************************************************************/
+    public static Numeric LogSpace ( double b, double s, double end, int pts ) {
+        return Element.pow( b, LinSpace( s, end, pts) );
+    }
+
+    /**************************************************************************
+     * Initializes an identity matrix with the inputted number of rows and
+     * columns
+     *
+     * @param r   The number of rows for the matrix
+     * @param c   The number of columns for the matrix
+     *
+     * @return a reference to the initialized matrix
+     *************************************************************************/
+    public static Numeric Eye ( int r, int c ) {
+        Numeric eye = new Numeric( r, c );
+        for ( int i = 0; i < r && i < c; i++ ) {
+            eye.dataReal[i * c + i] = 1;
+        }
+        return eye;
+    }
+
+    /**************************************************************************
+     * Initializes a square matrix with the diagonal equal to the inputted
+     * vector. All off-diagonal values are initialized to zero.
+     *
+     * @param N     A Numeric vector ( 1 dimensional row or column vector )
+     *
+     * @return a reference to the initialized matrix
+     *************************************************************************/
+    public static Numeric Diagonal ( Numeric N ) {
+        if ( N.shape.length > 2 )
+            throw new IllegalDimensionException(
+            "Input must be a row or column vector (shape = N or 1xN or Nx1)."
+        );
+        if ( N.shape.length != 1 && N.shape[0] != 1 && N.shape[1] != 1 )
+            throw new IllegalDimensionException(
+            "Input must be a row or column vector (shape = N or 1xN or Nx1)."
+        );
+
+        int size = N.dataReal.length;
+        boolean isComplex = N.dataImag != null;
+        Numeric result = new Numeric( size, size );
+        if ( isComplex )
+            result.dataImag = new double[result.dataReal.length];
+            for ( int ind, i = 0; i < size; i++ ) {
+            ind = i * size + i;
+            result.dataReal[ind] = N.dataReal[i];
+            if ( isComplex )
+                result.dataImag[ind] = N.dataImag[i];
+        }
+        return result;
     }
 
     /**************************************************************************
@@ -257,6 +330,19 @@ public class Numeric extends NDArray {
      * @return a reference to the Logical data.
      *************************************************************************/
     public double[] getDataImag ( ) {
+        return dataImag;
+    }
+
+    /**************************************************************************
+     * Initialize the imaginary component of the Numeric to zero. If the data
+     * is not currently complex, this will double it's size in memory. This
+     * must be done before doing complex numeric operations if the data is
+     * not currently complex.
+     *
+     * @return a reference to the initialized complex data.
+     *************************************************************************/
+    public double[] initializeDataImag ( ) {
+        dataImag = new double[dataReal.length];
         return dataImag;
     }
 
@@ -382,6 +468,11 @@ public class Numeric extends NDArray {
         if ( dataImag == null )
             dataImag = new double[dataReal.length];
         dataImag[ind] = inDataImag;
+    }
+
+    /*TODO*/
+    public Numeric get ( Logical inds ) {
+        return null;
     }
 
     /**************************************************************************
@@ -783,7 +874,7 @@ public class Numeric extends NDArray {
         boolean isComplex = dataImag != null;
         int maxInd = findAbsMax( );
         double max = dataReal[maxInd];
-        int L = String.format( "%.2f", max ).length();
+        int L = String.format( "%.4f", max ).length();
 
         StringBuilder s = new StringBuilder(super.toString() + " <Numeric>\n");
         if ( shape.length < 3 ) {
@@ -810,15 +901,15 @@ public class Numeric extends NDArray {
                     String tmp;
                     double real = dataReal[i * col + j];
                     if ( real < 0 )
-                        tmp = String.format("%" + (L+1) + ".2f", dataReal[i * col + j]);
+                        tmp = String.format("%" + (L+1) + ".4f", dataReal[i * col + j]);
                     else
-                        tmp = String.format("%" + L + ".2f", dataReal[i * col + j]);
+                        tmp = String.format("%" + L + ".4f", dataReal[i * col + j]);
                     if ( isComplex ) {
                         double img = dataImag[i * col + j];
                         if ( img < 0 )
-                            tmp = tmp + " - " + String.format("%" + L + ".2fi", img);
+                            tmp = tmp + " - " + String.format("%" + L + ".4fi", -img);
                         else
-                            tmp = tmp + " + " + String.format("%" + L + ".2fi", img);
+                            tmp = tmp + " + " + String.format("%" + L + ".4fi", img);
                     }
                     if ( j < col-1 && dataReal[i * col + j+1] < 0 )
                         if ( isComplex )
