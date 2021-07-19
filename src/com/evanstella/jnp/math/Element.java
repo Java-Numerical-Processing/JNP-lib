@@ -9,7 +9,7 @@ public final class Element {
 
 
     /**************************************************************************
-     * TODO Calculates each element in N to the power of the inputted exponent. If
+     * Calculates each element in N to the power of the inputted exponent. If
      * the element is both positive and real, just use built in Math.pow;
      * otherwise use DeMoivre's Theorem: z^n = r^n(cos(n*theta)+i*sin(n*theta))
      *
@@ -35,14 +35,13 @@ public final class Element {
                 continue;
             }
             if ( !isComplex ) {
-                // it is now
                 isComplex = true;
-                imagData = new double[realData.length];
+                imagData = result.initializeDataImag();
             }
             r = Math.sqrt( x*x + y*y );
-            r = Math.pow( r, exponent ); // to save doing r^n twice
-            theta = Math.atan(y/x);
-            theta = exponent * theta; // to save doing n*theta twice
+            r = Math.pow( r, exponent );
+            theta = Math.atan2(y,x);
+            theta = exponent * theta;
             realData[i] = r * Math.cos( theta );
             imagData[i] = r * Math.sin( theta );
         }
@@ -51,18 +50,18 @@ public final class Element {
     }
 
     /**************************************************************************
-     * TODO Calculates each the inputted base tp the power of element in N. If
-     * the base is both positive and real, just use built in Math.pow;
-     * otherwise use the following:
+     * Calculates N^exponent for each element in N. The following is used:
      *
-     * for w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
-     * and theta = arctan(b/a)... w^z = r^c * e^(-d*theta) *
-     *                                    [ cos(d ln(r) + c * theta) +
-     *                                      i sin(d ln(r) + c * theta) ]
+     * <p>For w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
+     * and theta = atan2(b,a) ...
+     * <p>w^z = r^c * e^(-d*theta) *
+     *          [ cos(d*ln(r) + c*theta) + i*sin(d*ln(r) + c*theta) ]
      *
-     * TODO
+     * @param expReal   the real component of the exponent
+     * @param expImag   the imaginary component of the element
+     * @param N         the Numeric exponent
      *
-     * @return a Numeric whose elements are equal to base^N
+     * @return a Numeric with the same size of N whose elements = base^N
      *************************************************************************/
     public static Numeric pow ( Numeric N, double expReal, double expImag ) {
         Numeric result = N.copy();
@@ -71,37 +70,37 @@ public final class Element {
 
         // we are now assuming complex output
         if ( imagData == null )
-            imagData = new double[realData.length];
+            imagData = result.initializeDataImag();
 
-        double a,b,r,theta,Omega;
+        double a,b,r,rc,theta,Omega;
         for ( int i = 0; i < realData.length; i++ ) {
             a = realData[i];
             b = imagData[i];
             r = Math.sqrt( a*a + b*b );
-            theta = Math.atan(b/a);
-            r = Math.pow( r, expReal ) * Math.exp( -expImag * theta );
+            theta = Math.atan2( b, a );
+            rc = Math.pow( r, expReal ) * Math.exp( -expImag * theta );
             Omega = ( expImag * Math.log(r) ) + ( expReal * theta );
-            realData[i] = r * Math.cos(Omega);
-            imagData[i] = r * Math.sin(Omega);
+            realData[i] = rc * Math.cos(Omega);
+            imagData[i] = rc * Math.sin(Omega);
         }
 
         return result;
     }
 
     /**************************************************************************
-     * TODO Calculates each the inputted base tp the power of element in N. If
-     * the base is both positive and real, just use built in Math.pow;
-     * otherwise use the following:
+     * Calculates base^N for each element in N. If the base is positive and
+     * real and the exponent is real, the function just computes base^N to
+     * avoid extra computation. Otherwise the following is used:
      *
-     * for w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
-     * and theta = arctan(b/a)... w^z = r^c * e^(-d*theta) *
-     *                                    [ cos(d ln(r) + c * theta) +
-     *                                      i sin(d ln(r) + c * theta) ]
+     * <p>For w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
+     * and theta = atan2(b,a) ...
+     * <p>w^z = r^c * e^(-d*theta) *
+     *          [ cos(d*ln(r) + c*theta) + i*sin(d*ln(r) + c*theta) ]
      *
      * @param base      the base be raised to each element
-     * @param N         the Numeric to calculate pow for
+     * @param N         the Numeric exponent
      *
-     * @return a Numeric whose elements are equal to base^N
+     * @return a Numeric with the same size of N whose elements = base^N
      *************************************************************************/
     public static Numeric pow ( double base, Numeric N ) {
         Numeric result = N.copy();
@@ -110,9 +109,10 @@ public final class Element {
         boolean isComplex = imagData != null;
         boolean negBase = base < 0.0;
 
-        double c,d,r,Omega;
-        // base has no complex component, r = sqrt(a^2) = abs(a) and theta = 0;
+        double c,d,r,rc,theta,Omega;
+        // base has no complex component, r = sqrt(a^2) = abs(a) and theta = 0 or pi;
         r = (base <= 0.0) ? 0.0 - base : base;
+        theta = (base <= 0.0) ? Math.PI : 0;
         for ( int i = 0; i < realData.length; i++ ) {
             c = realData[i];
             if ( !isComplex ) d = 0;
@@ -122,34 +122,31 @@ public final class Element {
                 continue;
             }
             if ( !isComplex ) {
-                // it is now
                 isComplex = true;
-                imagData = new double[realData.length];
+                imagData = result.initializeDataImag();
             }
-            r = Math.pow( r, c );
-            Omega = d * Math.log(r);
-            realData[i] = r * Math.cos(Omega);
-            imagData[i] = r * Math.sin(Omega);
+            rc = Math.pow( r, c ) * Math.exp( -d * theta );
+            Omega = d * Math.log(r) + c * theta;
+            realData[i] = rc * Math.cos(Omega);
+            imagData[i] = rc * Math.sin(Omega);
         }
 
         return result;
     }
 
     /**************************************************************************
-     * TODO Calculates each the inputted base tp the power of element in N. If
-     * the base is both positive and real, just use built in Math.pow;
-     * otherwise use the following:
+     * Calculates base^N for each element in N. The following is used:
      *
-     * for w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
-     * and theta = arctan(b/a)... w^z = r^c * e^(-d*theta) *
-     *                                    [ cos(d ln(r) + c * theta) +
-     *                                      i sin(d ln(r) + c * theta) ]
+     * <p>For w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
+     * and theta = atan2(b,a) ...
+     * <p>w^z = r^c * e^(-d*theta) *
+     *          [ cos(d*ln(r) + c*theta) + i*sin(d*ln(r) + c*theta) ]
      *
-     * @param baseReal  the real path of the base to be raised to each element
-     * @param baseImag  the imaginary part of the base
-     * @param N         the Numeric to calculate pow for
+     * @param baseReal  the real component of the base be raised to each element
+     * @param baseImag  the imaginary component of the base
+     * @param N         the Numeric exponent
      *
-     * @return a Numeric whose elements are equal to base^N
+     * @return a Numeric with the same size of N whose elements = base^N
      *************************************************************************/
     public static Numeric pow ( double baseReal, double baseImag, Numeric N ) {
         Numeric result = N.copy();
@@ -158,19 +155,19 @@ public final class Element {
 
         // we are now assuming complex output
         if ( imagData == null )
-            imagData = new double[realData.length];
+            imagData = result.initializeDataImag();
 
-        double c,d,r,theta,Omega;
+        double c,d,r,rc,theta,Omega;
         r = Math.sqrt( baseReal*baseReal + baseImag*baseImag );
-        theta = Math.atan(baseImag/baseReal);
+        theta = Math.atan2(baseImag, baseReal);
 
         for ( int i = 0; i < realData.length; i++ ) {
             c = realData[i];
             d = imagData[i];
-            r = Math.pow( r, c ) * Math.exp( -d * theta );
+            rc = Math.pow( r, c ) * Math.exp( -d * theta );
             Omega = ( d * Math.log(r) ) + ( c * theta );
-            realData[i] = r * Math.cos(Omega);
-            imagData[i] = r * Math.sin(Omega);
+            realData[i] = rc * Math.cos(Omega);
+            imagData[i] = rc * Math.sin(Omega);
         }
 
         return result;
