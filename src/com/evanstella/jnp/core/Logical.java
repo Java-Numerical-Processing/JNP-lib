@@ -7,7 +7,7 @@ public class Logical extends NDArray {
 
 
     /**************************************************************************
-     * Class constructor. Initializes a Logical with parameterized dimensions.
+     * <p>Class constructor. Initializes a Logical with parameterized dimensions.
      * The dimensions are deep copied to limit their write access to the object.
      *
      * @param dimensions The arbitrary dimensions for the N-D Logical.
@@ -22,7 +22,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Class constructor. Initialize a Logical from a boolean[]. Only a
+     * <p>Class constructor. Initialize a Logical from a boolean[]. Only a
      * shallow copy of the array is made
      *
      * @param indata The array to initialize from
@@ -33,7 +33,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Class constructor. Initialize a Logical from a boolean[][]. Makes a
+     * <p>Class constructor. Initialize a Logical from a boolean[][]. Makes a
      * a deep copy in order to aggregate the boolean[][] into a boolean[].
      *
      * @param indata The array to initialize from
@@ -53,7 +53,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Logical with all true values.
+     * <p>Initializes a Logical with all true values.
      *
      * @param dimensions The dimensions for the N-D Logical.
      *
@@ -66,7 +66,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Logical with all false values. Literally the same as
+     * <p>Initializes a Logical with all false values. Literally the same as
      * calling the constructor but here for completeness' sake.
      *
      * @param dimensions the dimensions for the N-D Logical.
@@ -78,7 +78,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Logical with random true/false values using
+     * <p>Initializes a Logical with random true/false values using
      * java.util.Random.
      *
      * @param dimensions the dimensions for the N-D Logical.
@@ -96,7 +96,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Logical with random true/false values using with a seed
+     * <p>Initializes a Logical with random true/false values using with a seed
      * java.util.Random.
      *
      * @param seed       the PRNG seed.
@@ -115,7 +115,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Gets a reference to the raw data contained in the Logical. Only
+     * <p>Gets a reference to the raw data contained in the Logical. Only
      * recommended if you need fast access to the data in the object.
      *
      * @return a reference to the Logical data.
@@ -125,7 +125,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value
+     * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions. If this is the case, an IllegalDimensionException will be
      * thrown.
@@ -144,7 +144,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value
+     * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions.
      *
@@ -156,7 +156,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value. If
+     * <p>Sets the value of the data at the subscript with the inputted value. If
      * the subscript is out of bounds of the data dimensions, the data will be
      * resized. This can be slower on larger data sets as this
      * this operation is O(n) for data of size n.
@@ -181,7 +181,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Returns the data at the inputted subscript.
+     * <p>Returns the data at the inputted subscript.
      *
      * @param sub   the subscript to retrieve data at
      *
@@ -196,7 +196,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Returns the data at the inputted linear index.
+     * <p>Returns the data at the inputted linear index.
      *
      * @param ind   the linear index to retrieve data at
      *
@@ -210,7 +210,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Reshapes the Logical by simply changing the dimensions, not the data.
+     * <p>Reshapes the Logical by simply changing the dimensions, not the data.
      * This means the output will still be in row-major order and the dimensions
      * must satisfy the requirement that the number of elements must not change.
      *
@@ -232,7 +232,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Transposes the Logical. Only defined for Matrices (<3 dimensions); any
+     * <p>Transposes the Logical. Only defined for Matrices (<3 dimensions); any
      * input of a higher dimension than 2 will cause an exception
      *
      * @return a reference to the transposed data.
@@ -259,7 +259,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * flattens the Logical to one dimension without changing any of the data.
+     * <p>flattens the Logical to one dimension without changing any of the data.
      *
      * @return a reference to the flattened Logical
      *************************************************************************/
@@ -270,7 +270,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Creates a deep copy of this Logical object and returns a reference to
+     * <p>Creates a deep copy of this Logical object and returns a reference to
      * the copy.
      *
      * @return a reference to the copied object
@@ -282,7 +282,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Returns a Logical with all dimensions of length 1 removed. If the
+     * <p>Returns a Logical with all dimensions of length 1 removed. If the
      * resulting data is one dimensional, the resulting object will be a row
      * vector (1xN) if the first dimension (row) was length 1, and a column
      * vector (Nx1) otherwise.
@@ -312,10 +312,10 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Resizes the array containing the Logical data while keeping data in its
+     * <p>Resizes the array containing the Logical data while keeping data in its
      * current subscripted position.
      *
-     * Should be done infrequently as this requires copying each element to a
+     * <p>Should be done infrequently as this requires copying each element to a
      * new array. There is also a little overhead associated with calculating
      * the new element indices. Elements in newly allocated space are
      * initialized to 0 (false)
@@ -347,7 +347,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Slices the data into a sub Logical
+     * <p>Slices the data into a sub Logical
      *
      * @param dimensions    An int[] for each dimension, e.i. if the data is 3
      *                      dimensional, inputs would be int[],int[],int[]
@@ -398,7 +398,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Concatenate the inputted Logical to the end of this Logical. Note that
+     * <p>Concatenate the inputted Logical to the end of this Logical. Note that
      * the number of dimensions and the dimensions lengths, except for the
      * dimension being concatenated along, must be equal.
      *
@@ -437,10 +437,8 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Creates a string representation of the Logical for printing. Will only
+     * <p>Creates a string representation of the Logical for printing. Will only
      * show actual data for 1 and 2 dimensional data as higher dimensional
-     *
-     *
      * data is difficult to display well in a string.
      *
      * @return a string representation of the Logical
@@ -470,7 +468,7 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
-     * Compares two Logical objects to check if they are equal in both
+     * <p>Compares two Logical objects to check if they are equal in both
      * dimension and data.
      *
      * @param L the other Logical to compare this one to

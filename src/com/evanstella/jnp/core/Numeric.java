@@ -9,7 +9,7 @@ public class Numeric extends NDArray {
 
 
     /**************************************************************************
-     * Class constructor. Initializes a Numeric with parameterized dimensions.
+     * <p>Class constructor. Initializes a Numeric with parameterized dimensions.
      * The dimensions are deep copied to limit their write access to the object.
      *
      * @param dimensions The arbitrary dimensions for the N-D Numeric.
@@ -29,7 +29,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Class constructor. Initialize a Numeric from a double[]. Only a
+     * <p>Class constructor. Initialize a Numeric from a double[]. Only a
      * shallow copy of the array is made
      *
      * @param indata The array to initialize from
@@ -40,7 +40,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Class constructor. Initialize a Numeric from a double[][]. Makes a
+     * <p>Class constructor. Initialize a Numeric from a double[][]. Makes a
      * a deep copy in order to aggregate the double[][] into a double[].
      *
      * @param indata The array to initialize from
@@ -60,7 +60,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Class constructor. Initialize a Numeric from a double[]. Only a
+     * <p>Class constructor. Initialize a Numeric from a double[]. Only a
      * shallow copy of the array is made
      *
      * @param inDataReal The array to initialize the real data component from
@@ -79,7 +79,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Class constructor. Initialize a Numeric from a double[][]. Makes a
+     * <p>Class constructor. Initialize a Numeric from a double[][]. Makes a
      * a deep copy in order to aggregate the double[][] into a double[].
      *
      * @param inDataReal The array to initialize the real data component from
@@ -111,7 +111,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Logical with all true values.
+     * <p>Initializes a Logical with all true values.
      *
      * @param dimensions The dimensions for the N-D Logical.
      *
@@ -124,7 +124,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Numeric with all zeros. Literally the same as
+     * <p>Initializes a Numeric with all zeros. Literally the same as
      * calling the constructor but here for completeness' sake.
      *
      * @param dimensions the dimensions for the N-D Numeric.
@@ -136,7 +136,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Numeric with random real values using java.util.Random.
+     * <p>Initializes a Numeric with random real values using java.util.Random.
      *
      * @param dimensions the dimensions for the N-D Numeric.
      *
@@ -153,7 +153,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Numeric with random real values using java.util.Random.
+     * <p>Initializes a Numeric with random real values using java.util.Random.
      *
      * @param dimensions the dimensions for the N-D Numeric.
      *
@@ -173,7 +173,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Numeric with random real values with a seed using
+     * <p>Initializes a Numeric with random real values with a seed using
      * java.util.Random.
      *
      * @param seed       the PRNG seed.
@@ -192,7 +192,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a Numeric with random real values with a seed using
+     * <p>Initializes a Numeric with random real values with a seed using
      * java.util.Random.
      *
      * @param seed       the PRNG seed.
@@ -214,7 +214,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a row vector of linearly spaced elements.
+     * <p>Initializes a row vector of linearly spaced elements.
      *
      * @param start     the value of the first element
      * @param end       the value of the last element
@@ -237,7 +237,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a row vector of logarithmically (base 10) spaced elements.
+     * <p>Initializes a row vector of logarithmically (base 10) spaced elements.
      *
      * @param start     the value of the first element
      * @param end       the value of the last element
@@ -250,7 +250,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a row vector of logarithmically spaced elements.
+     * <p>Initializes a row vector of logarithmically spaced elements.
      *
      * @param b         the base of the log scale
      * @param s         the value of the first element
@@ -264,7 +264,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes an identity matrix with the inputted number of rows and
+     * <p>Initializes an identity matrix with the inputted number of rows and
      * columns
      *
      * @param r   The number of rows for the matrix
@@ -281,7 +281,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initializes a square matrix with the diagonal equal to the inputted
+     * <p>Initializes a square matrix with the diagonal equal to the inputted
      * vector. All off-diagonal values are initialized to zero.
      *
      * @param N     A Numeric vector ( 1 dimensional row or column vector )
@@ -313,7 +313,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Gets a reference to the raw real data contained in the Numeric. Only
+     * <p>Gets a reference to the raw real data contained in the Numeric. Only
      * recommended if you need fast access to the data in the object.
      *
      * @return a reference to the Logical data.
@@ -323,7 +323,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Gets a reference to the raw imaginary data contained in the Logical. Only
+     * <p>Gets a reference to the raw imaginary data contained in the Logical. Only
      * recommended if you need fast access to the data in the object. If the
      * Numeric contains only real numbers, the imaginary component is null.
      *
@@ -334,7 +334,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Initialize the imaginary component of the Numeric to zero. If the data
+     * <p>Initialize the imaginary component of the Numeric to zero. If the data
      * is not currently complex, this will double it's size in memory. This
      * must be done before doing complex numeric operations if the data is
      * not currently complex.
@@ -347,7 +347,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value
+     * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions. If this is the case, an IllegalDimensionException will be
      * thrown.
@@ -366,7 +366,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value
+     * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions. If this is the case, an IllegalDimensionException will be
      * thrown.
@@ -389,7 +389,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value
+     * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions.
      *
@@ -401,7 +401,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value
+     * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions.
      *
@@ -417,7 +417,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value. If
+     * <p>Sets the value of the data at the subscript with the inputted value. If
      * the subscript is out of bounds of the data dimensions, the data will be
      * resized. This can be slower on larger data sets as this
      * this operation is O(n) for data of size n.
@@ -442,7 +442,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Sets the value of the data at the subscript with the inputted value. If
+     * <p>Sets the value of the data at the subscript with the inputted value. If
      * the subscript is out of bounds of the data dimensions, the data will be
      * resized. This can be slower on larger data sets as this
      * this operation is O(n) for data of size n.
@@ -471,7 +471,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Indexes the Numeric using the inputted Logical as a mask and sets the
+     * <p>Indexes the Numeric using the inputted Logical as a mask and sets the
      * indexed values to val.
      *
      * @param val       The real value to set the indexed elements to
@@ -497,7 +497,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Indexes the Numeric using the inputted Logical as a mask and sets the
+     * <p>Indexes the Numeric using the inputted Logical as a mask and sets the
      * indexed values to val.
      *
      * @param valReal   The real component of the value to set the indexed
@@ -530,7 +530,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Indexes the Numeric using the inputted Logical as a mask. Returns a row
+     * <p>Indexes the Numeric using the inputted Logical as a mask. Returns a row
      * vector with the indexed values.
      *
      * @param Inds      Logical to be used as an index into the data
@@ -568,7 +568,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Returns the real component of the data at the inputted subscript.
+     * <p>Returns the real component of the data at the inputted subscript.
      *
      * @param sub   the subscript to retrieve data at
      *
@@ -583,7 +583,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Returns the imaginary component of the data at the inputted subscript.
+     * <p>Returns the imaginary component of the data at the inputted subscript.
      *
      * @param sub   the subscript to retrieve data at
      *
@@ -600,7 +600,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Returns the real component of the data at the inputted linear index.
+     * <p>Returns the real component of the data at the inputted linear index.
      *
      * @param ind   the linear index to retrieve data at
      *
@@ -614,7 +614,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Returns the imaginary component of the data at the inputted linear index.
+     * <p>Returns the imaginary component of the data at the inputted linear index.
      *
      * @param ind   the linear index to retrieve data at
      *
@@ -630,7 +630,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Find the index of the max value in the data. Only compares the real
+     * <p>Find the index of the max value in the data. Only compares the real
      * component of the data since comparisons between complex numbers are not
      * well defined.
      *
@@ -649,7 +649,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Find the index of the absolute max value in the data. Only compares the
+     * <p>Find the index of the absolute max value in the data. Only compares the
      * real component of the data since comparisons between complex numbers are
      * not well defined.
      *
@@ -671,7 +671,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Find the index of the min value in the data. Only compares the real
+     * <p>Find the index of the min value in the data. Only compares the real
      * component of the data since comparisons between complex numbers are not
      * well defined.
      *
@@ -690,7 +690,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Find the index of the absolute min value in the data. Only compares the
+     * <p>Find the index of the absolute min value in the data. Only compares the
      * real component of the data since comparisons between complex numbers are
      * not well defined.
      *
@@ -712,7 +712,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Reshapes the Numeric by simply changing the dimensions, not the data.
+     * <p>Reshapes the Numeric by simply changing the dimensions, not the data.
      * This means the output will still be in row-major order and the dimensions
      * must satisfy the requirement that the number of elements must not change.
      *
@@ -734,7 +734,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Transposes the Numeric. Only defined for Matrices (<3 dimensions); any
+     * <p>Transposes the Numeric. Only defined for Matrices (<3 dimensions); any
      * input of a higher dimension than 2 will cause an exception
      *
      * @return a reference to the transposed data.
@@ -767,7 +767,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * flattens the Numeric to one dimension without changing any of the data.
+     * <p>flattens the Numeric to one dimension without changing any of the data.
      *
      * @return a reference to the flattened Numeric
      *************************************************************************/
@@ -778,7 +778,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Creates a deep copy of this Numeric object and returns a reference to
+     * <p>Creates a deep copy of this Numeric object and returns a reference to
      * the copy.
      *
      * @return a reference to the copied object
@@ -790,7 +790,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Returns a Numeric with all dimensions of length 1 removed. If the
+     * <p>Returns a Numeric with all dimensions of length 1 removed. If the
      * resulting data is one dimensional, the resulting object will be a row
      * vector (1xN) if the first dimension (row) was length 1, and a column
      * vector (Nx1) otherwise.
@@ -820,10 +820,10 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Resizes the array containing the Numeric data while keeping data in its
+     * <p>Resizes the array containing the Numeric data while keeping data in its
      * current subscripted position.
      *
-     * Should be done infrequently as this requires copying each element to a
+     * <p>Should be done infrequently as this requires copying each element to a
      * new array. There is also a little overhead associated with calculating
      * the new element indices. Elements in newly allocated space are
      * initialized to 0.0
@@ -861,7 +861,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Slices the data into a sub Numeric
+     * <p>Slices the data into a sub Numeric
      *
      * @param dimensions    An int[] for each dimension, e.i. if the data is 3
      *                      dimensional, inputs would be int[],int[],int[]
@@ -913,7 +913,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Concatenate the inputted Numeric to the end of this Numeric. Note that
+     * <p>Concatenate the inputted Numeric to the end of this Numeric. Note that
      * the number of dimensions and the dimension lengths, except for the
      * dimension being concatenated along, must be equal.
      *
@@ -956,7 +956,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Creates a string representation of the Numeric for printing. Will only
+     * <p>Creates a string representation of the Numeric for printing. Will only
      * show actual data for 1 and 2 dimensional data as higher dimensional
      * data is difficult to display well in a string.
      *
@@ -1022,7 +1022,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Compares two Numeric objects to check if they are equal in both
+     * <p>Compares two Numeric objects to check if they are equal in both
      * dimension and data. NOT RECOMMENDED when dealing with arithmetic because
      * of the possibility of precision issues. Use equalTolerance() instead.
      *
@@ -1056,7 +1056,7 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * Compares two Numeric objects to check if they are equal with a
+     * <p>Compares two Numeric objects to check if they are equal with a
      * tolerance
      *
      * @param N         the other Numeric to compare to
