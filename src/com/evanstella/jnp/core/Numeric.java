@@ -470,9 +470,42 @@ public class Numeric extends NDArray {
         dataImag[ind] = inDataImag;
     }
 
-    /*TODO*/
-    public Numeric get ( Logical inds ) {
-        return null;
+    /**************************************************************************
+     * Indexes the Numeric using the inputted Logical as a mask. Returns a row
+     * vector with the indexed values.
+     *
+     * @param Inds      Logical to be used as an index into the data
+     *
+     * @return a reference to the initialized vector.
+     *************************************************************************/
+    public Numeric get ( Logical Inds ) {
+        if ( Inds.shape.length != shape.length)
+            throw new IllegalDimensionException(
+                "Index dimensions must be equal to data dimensions."
+        );
+        for ( int i = 0; i < shape.length; i++ ) {
+            if ( Inds.shape[i] != shape[i] )
+                throw new IllegalDimensionException(
+                    "Index dimensions must be equal to data dimensions."
+            );
+        }
+        // get number of elements
+        int numElements = 0;
+        for ( int i = 0; i < dataReal.length; i++ )
+            if ( Inds.data[i] ) numElements++;
+
+        Numeric result = new Numeric( 1, numElements );
+        boolean isComplex = dataImag != null;
+        if ( isComplex )
+            result.dataImag = new double[result.dataReal.length];
+        for ( int ind = 0, i = 0; i < dataReal.length; i++ ) {
+            if ( Inds.data[i] ) {
+                result.dataReal[ind] = dataReal[i];
+                if ( isComplex ) result.dataImag[ind] = dataImag[i];
+                ind++;
+            }
+        }
+        return result;
     }
 
     /**************************************************************************
