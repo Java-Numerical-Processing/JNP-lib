@@ -471,6 +471,65 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
+     * Indexes the Numeric using the inputted Logical as a mask and sets the
+     * indexed values to val.
+     *
+     * @param val       The real value to set the indexed elements to
+     * @param Inds      Logical to be used as an index into the data
+     *************************************************************************/
+    public void set ( double val, Logical Inds ) {
+        if ( Inds.shape.length != shape.length)
+            throw new IllegalDimensionException(
+                "Index dimensions must be equal to data dimensions."
+        );
+        for ( int i = 0; i < shape.length; i++ ) {
+            if ( Inds.shape[i] != shape[i] )
+                throw new IllegalDimensionException(
+                    "Index dimensions must be equal to data dimensions."
+            );
+        }
+
+        for ( int i = 0; i < dataReal.length; i++ ) {
+            if ( Inds.data[i] ) {
+                dataReal[i] = val;
+            }
+        }
+    }
+
+    /**************************************************************************
+     * Indexes the Numeric using the inputted Logical as a mask and sets the
+     * indexed values to val.
+     *
+     * @param valReal   The real component of the value to set the indexed
+     *                  elements to
+     * @param valImag   The imaginary component of the value
+     * @param Inds      Logical to be used as an index into the data
+     *************************************************************************/
+    public void set ( double valReal, double valImag, Logical Inds ) {
+        if ( Inds.shape.length != shape.length)
+            throw new IllegalDimensionException(
+                    "Index dimensions must be equal to data dimensions."
+            );
+        for ( int i = 0; i < shape.length; i++ ) {
+            if ( Inds.shape[i] != shape[i] )
+                throw new IllegalDimensionException(
+                        "Index dimensions must be equal to data dimensions."
+                );
+        }
+
+        boolean isComplex = ( valImag != 0 );
+        if ( isComplex && dataImag == null )
+            dataImag = new double[dataReal.length];
+
+        for ( int i = 0; i < dataReal.length; i++ ) {
+            if ( Inds.data[i] ) {
+                dataReal[i] = valReal;
+                if ( isComplex ) dataImag[i] = valImag;
+            }
+        }
+    }
+
+    /**************************************************************************
      * Indexes the Numeric using the inputted Logical as a mask. Returns a row
      * vector with the indexed values.
      *
