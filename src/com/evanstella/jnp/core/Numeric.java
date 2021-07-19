@@ -270,7 +270,7 @@ public class Numeric extends NDArray {
      * @return A Numeric of logarithmically space elements.
      *************************************************************************/
     public static Numeric LogSpace ( double start, double end, int numPts ) {
-        return Element.pow( 10, LinSpace( start, end, numPts) );
+        return Element.pow( Numeric.Scalar(10), LinSpace( start, end, numPts) );
     }
 
     /**************************************************************************
@@ -284,7 +284,7 @@ public class Numeric extends NDArray {
      * @return A Numeric of logarithmically space elements.
      *************************************************************************/
     public static Numeric LogSpace ( double b, double s, double end, int pts ) {
-        return Element.pow( b, LinSpace( s, end, pts) );
+        return Element.pow( Numeric.Scalar(b), LinSpace( s, end, pts) );
     }
 
     /**************************************************************************
@@ -338,6 +338,8 @@ public class Numeric extends NDArray {
 
     /**************************************************************************
      * <p>Check whether this Numeric is a scalar (size of 1)
+     *
+     * @return true if this Numeric is scalar
      *************************************************************************/
     public boolean isScalar ( ) {
         return dataReal.length == 1;
@@ -537,16 +539,10 @@ public class Numeric extends NDArray {
      * @param Inds      Logical to be used as an index into the data
      *************************************************************************/
     public void set ( double valReal, double valImag, Logical Inds ) {
-        if ( Inds.shape.length != shape.length)
+        if ( !NDArray.dimensionsMatch( this, Inds ) )
             throw new IllegalDimensionException(
                     "Index dimensions must be equal to data dimensions."
             );
-        for ( int i = 0; i < shape.length; i++ ) {
-            if ( Inds.shape[i] != shape[i] )
-                throw new IllegalDimensionException(
-                        "Index dimensions must be equal to data dimensions."
-                );
-        }
 
         boolean isComplex = ( valImag != 0 );
         if ( isComplex && dataImag == null )
@@ -569,16 +565,11 @@ public class Numeric extends NDArray {
      * @return a reference to the initialized vector.
      *************************************************************************/
     public Numeric get ( Logical Inds ) {
-        if ( Inds.shape.length != shape.length)
+
+        if ( !NDArray.dimensionsMatch( this, Inds ) )
             throw new IllegalDimensionException(
                 "Index dimensions must be equal to data dimensions."
         );
-        for ( int i = 0; i < shape.length; i++ ) {
-            if ( Inds.shape[i] != shape[i] )
-                throw new IllegalDimensionException(
-                    "Index dimensions must be equal to data dimensions."
-            );
-        }
         // get number of elements
         int numElements = 0;
         for ( int i = 0; i < dataReal.length; i++ )
@@ -1044,12 +1035,8 @@ public class Numeric extends NDArray {
     public boolean equals ( Numeric N ) {
         if ( this == N )
             return true;
-        if ( N.shape.length != this.shape.length )
+        if ( !NDArray.dimensionsMatch( this, N ) )
             return false;
-        for ( int i = 0; i < shape.length; i++ ) {
-            if ( this.shape[i] != N.shape[i] )
-                return false;
-        }
         boolean isComplex = dataImag != null;
         if ( isComplex && N.dataImag == null )
             return false;
@@ -1079,12 +1066,9 @@ public class Numeric extends NDArray {
     public boolean equalsTolerance ( Numeric N, double tolerance ) {
         if ( this == N )
             return true;
-        if ( N.shape.length != this.shape.length )
+        if ( !NDArray.dimensionsMatch( this, N ) )
             return false;
-        for ( int i = 0; i < shape.length; i++ ) {
-            if ( this.shape[i] != N.shape[i] )
-                return false;
-        }
+
         boolean isComplex = dataImag != null;
         if ( isComplex && N.dataImag == null )
             return false;
