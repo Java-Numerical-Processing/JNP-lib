@@ -153,6 +153,26 @@ public abstract class NDArray {
     };
 
     /**************************************************************************
+     * <p>Determine if the dimensions of A1 and A2 are the same.
+     *
+     * @param A1    The first NDArray to compare
+     * @param A2    The second NDArray to compare
+     *
+     * @return whether the dimensions of A1 = those of A2
+     *************************************************************************/
+    public static boolean dimensionsMatch ( NDArray A1, NDArray A2 ) {
+        if ( A1.shape.length != A2.shape.length )
+            return false;
+
+        for ( int i = 0; i < A1.shape.length; i++ ) {
+            if ( A1.shape[i] != A2.shape[i] )
+                return false;
+        }
+
+        return true;
+    }
+
+    /**************************************************************************
      * <p>Returns the shape of the NDArray
      *
      * @return a copy of this.shape
