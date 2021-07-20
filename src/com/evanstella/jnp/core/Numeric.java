@@ -1067,7 +1067,7 @@ public class Numeric extends NDArray {
                         if ( img < 0 )
                             tmp = tmp + " -" + String.format("%" + L + ".4fi", -img);
                         else
-                            tmp = tmp + " + " + String.format("%" + L + ".4fi", img);
+                            tmp = tmp + " +" + String.format("%" + L + ".4fi", img);
                     }
                     if ( j < col-1 && dataReal[i * col + j+1] < 0 )
                         if ( isComplex )

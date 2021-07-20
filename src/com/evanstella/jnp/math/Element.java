@@ -286,6 +286,354 @@ public final class Element {
     }
 
     /**************************************************************************
+     * <p>Compute the natural log of A element-wise.
+     *
+     * Note for complex z = a+bi, ln(z) = ln(mag(z)) + phase(z)*i
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements ln(A)
+     *************************************************************************/
+    public static Numeric log ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b,r;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[0];
+            // only do all the extra computation if we have to
+            if ( b == 0 && a >=0 ) {
+                resultReal[i] = Math.log(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            r = Math.sqrt( a*a + b*b );
+            resultReal[i] = Math.log(r);
+            resultImag[i] = Math.atan2(b,a);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the sine of A element-wise. A is in radians.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements sin(A)
+     *************************************************************************/
+    public static Numeric sin ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[i];
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.sin(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            resultReal[i] = Math.sin(a) * Math.cosh(b);
+            resultImag[i] = Math.cos(a) * Math.sinh(b);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the sine of A element-wise. A is in degrees. Note that the
+     * conversion from radians to degrees is not exact.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements sin(A)
+     *************************************************************************/
+    public static Numeric sind ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b, toRad;
+        boolean scalarA = A.isScalar();
+
+        toRad = 0.017453292519943295;
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i] * toRad;
+            if ( imagA == null ) b = 0.0; else b = imagA[i] * toRad;
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.sin(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            resultReal[i] = Math.sin(a) * Math.cosh(b);
+            resultImag[i] = Math.cos(a) * Math.sinh(b);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the cosine of A element-wise. A is in radians.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements cos(A)
+     *************************************************************************/
+    public static Numeric cos ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[i];
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.cos(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            resultReal[i] = Math.cos(a) * Math.cosh(b);
+            resultImag[i] = -1 * Math.sin(a) * Math.sinh(b);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the cosine of A element-wise. A is in degrees. Note that the
+     * conversion from radians to degrees is not exact
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements cos(A)
+     *************************************************************************/
+    public static Numeric cosd ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b, toRad;
+        boolean scalarA = A.isScalar();
+
+        toRad = 0.017453292519943295;
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i] * toRad;
+            if ( imagA == null ) b = 0.0; else b = imagA[i] * toRad;
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.cos(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            resultReal[i] = Math.cos(a) * Math.cosh(b);
+            resultImag[i] = -1 * Math.sin(a) * Math.sinh(b);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the tangent of A element-wise. A is in radians.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements tan(A)
+     *************************************************************************/
+    public static Numeric tan ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b,cos2acosh2b;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[i] * 2;
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.tan(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            a *= 2;  // note that b has already been x2
+            cos2acosh2b = Math.cos(a) + Math.cosh(b);
+            resultReal[i] = Math.sin(a)  / cos2acosh2b;
+            resultImag[i] = Math.sinh(b) / cos2acosh2b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the tangent of A element-wise. A is in degrees, Not that the
+     * conversion to radians is not exact.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements tan(A)
+     *************************************************************************/
+    public static Numeric tand ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b,cos2acosh2b,toRad;
+        boolean scalarA = A.isScalar();
+
+        toRad = 0.017453292519943295;
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i] * toRad;
+            if ( imagA == null ) b = 0.0; else b = imagA[i] * 2 * toRad;
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.tan(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            a *= 2;  // note that b has already been x2
+            cos2acosh2b = Math.cos(a) + Math.cosh(b);
+            resultReal[i] = Math.sin(a)  / cos2acosh2b;
+            resultImag[i] = Math.sinh(b) / cos2acosh2b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the hyperbolic cosine of A element-wise. A is in radians.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements cosh(A)
+     *************************************************************************/
+    public static Numeric cosh ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[i];
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.cosh(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            resultReal[i] = Math.cosh(a) * Math.cos(b);
+            resultImag[i] = Math.sinh(a) * Math.sin(b);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the hyperbolic sine of A element-wise. A is in radians.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements sinh(A)
+     *************************************************************************/
+    public static Numeric sinh ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[i];
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.sinh(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            resultReal[i] = Math.sinh(a) * Math.cos(b);
+            resultImag[i] = Math.cosh(a) * Math.sin(b);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the hyperbolic tangent of A element-wise. A is in radians.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements tanh(A)
+     *************************************************************************/
+    public static Numeric tanh ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double a,b,cosh2acos2b;
+        boolean scalarA = A.isScalar();
+
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = realA[i];
+            if ( imagA == null ) b = 0.0; else b = imagA[i] * 2;
+            // only do all the extra computation if we have to
+            if ( b == 0 ) {
+                resultReal[i] = Math.tanh(a);
+                continue;
+            }
+            // we'll only get here if the result must be complex
+            if ( resultImag == null ) resultImag = result.initializeDataImag();
+            a *= 2;  // note that b has already been x2
+            cosh2acos2b = Math.cosh(a) + Math.cos(b);
+            resultReal[i] = Math.sinh(a) / cosh2acos2b;
+            resultImag[i] = Math.sin(b)  / cosh2acos2b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
      * <p>Compare A and B element wise. If one of the values is scalar, compare
      * that value to the other numeric. Only compares real components as
      * comparison is not well defined for complex values.
