@@ -1001,7 +1001,7 @@ public class Numeric extends NDArray {
                     if ( isComplex ) {
                         double img = dataImag[i * col + j];
                         if ( img < 0 )
-                            tmp = tmp + " - " + String.format("%" + L + ".4fi", -img);
+                            tmp = tmp + " -" + String.format("%" + L + ".4fi", -img);
                         else
                             tmp = tmp + " + " + String.format("%" + L + ".4fi", img);
                     }
@@ -1082,7 +1082,7 @@ public class Numeric extends NDArray {
             if ( diff > tolerance )
                 return false;
             if ( isComplex ) {
-                diff = this.dataImag[i] - N.dataImag[i];
+                diff = Math.abs(this.dataImag[i] - N.dataImag[i]);
                 diff = (diff <= 0.0) ? 0.0 - diff : diff;
                 if (diff > tolerance)
                     return false;

@@ -1,6 +1,7 @@
 package com.evanstella.jnp.math;
 
 import com.evanstella.jnp.core.IllegalDimensionException;
+import com.evanstella.jnp.core.Logical;
 import com.evanstella.jnp.core.NDArray;
 import com.evanstella.jnp.core.Numeric;
 
@@ -9,6 +10,26 @@ public final class Element {
     // no instances for you
     private Element () {}
 
+
+    /**************************************************************************
+     * <p>Take the negative of A element wise
+     *
+     * @param A the Numeric
+     *
+     * @return a Numeric with elements -A
+     *************************************************************************/
+    public static Numeric neg ( Numeric A ) {
+        Numeric result = A.copy();
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            resultReal[i] = -resultReal[i];
+            if ( resultImag != null )
+                resultImag[i] = -resultImag[i];
+        }
+        return result;
+    }
 
     /**************************************************************************
      * <p>Add A and B element-wise. If A or B is scalar, add the scalar to the
@@ -149,25 +170,26 @@ public final class Element {
     }
 
     /**************************************************************************
-     * <p>Multiply A and B element-wise. If A or B is scalar, multiply the
-     * scalar with the elements of the other.
+     * <p>Divide A by B element-wise. If A or B is scalar, divide the
+     * scalar by the elements of the other or vice-versa.
      *
      * @param A the first Numeric
      * @param B the second Numeric
      *
-     * @return a Numeric with elements A*B
+     * @return a Numeric with elements A/B
      *************************************************************************/
-    public static Numeric mul ( Numeric A, Numeric B ) {
+    public static Numeric div ( Numeric A, Numeric B ) {
         validateDimensionsFatal( A, B );
         double[] realA = A.getDataReal();
         double[] imagA = A.getDataImag();
         double[] realB = B.getDataReal();
         double[] imagB = B.getDataImag();
-        double a,b,c,d;
+        double a,b,c,d,c2d2;
         boolean scalarA = A.isScalar(), scalarB = B.isScalar();
         a = realA[0]; c = realB[0];
         if ( imagA == null ) b = 0.0; else b = imagA[0];
         if ( imagB == null ) d = 0.0; else d = imagB[0];
+        c2d2 = c*c + d*d;
 
         int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
         Numeric result = new Numeric( newShape );
@@ -182,14 +204,17 @@ public final class Element {
             if ( !scalarB ) {
                 c = realB[i];
                 if ( imagB == null ) d = 0.0; else d = imagB[i];
+                c2d2 = c*c + d*d;
             }
-            resultReal[i] = a*c - b*d;
             // only do all the extra computation if we have to
-            if ( b == 0 && d == 0 )
+            if ( b == 0 && d == 0 ) {
+                resultReal[i] = a/c;
                 continue;
+            }
             // we'll only get here if the result must be complex
             if ( resultImag == null ) resultImag = result.initializeDataImag();
-            resultImag[i] = a*d + b*c;
+            resultReal[i] = (a*c + b*d) / c2d2;
+            resultImag[i] = (b*c + a*d) / c2d2;
         }
         return result;
     }
@@ -260,18 +285,268 @@ public final class Element {
         return result;
     }
 
+    /**************************************************************************
+     * <p>Compare A and B element wise. If one of the values is scalar, compare
+     * that value to the other numeric. Only compares real components as
+     * comparison is not well defined for complex values.
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical that indexes A > B
+     *************************************************************************/
+    public static Logical gre ( Numeric A, Numeric B ) {
+        validateDimensionsFatal( A, B );
+        double[] realA = A.getDataReal();
+        double[] realB = B.getDataReal();
+        double a,b;
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+        a = realA[0]; b = realB[0];
+
+        int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
+        Logical result = new Logical( newShape );
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ ) {
+            if ( !scalarA ) a = realA[i];
+            if ( !scalarB ) b = realB[i];
+            resultData[i] = a > b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compare A and B element wise. If one of the values is scalar, compare
+     * that value to the other numeric. Only compares real components as
+     * comparison is not well defined for complex values.
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical that indexes A >= B
+     *************************************************************************/
+    public static Logical greq ( Numeric A, Numeric B ) {
+        validateDimensionsFatal( A, B );
+        double[] realA = A.getDataReal();
+        double[] realB = B.getDataReal();
+        double a,b;
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+        a = realA[0]; b = realB[0];
+
+        int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
+        Logical result = new Logical( newShape );
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ ) {
+            if ( !scalarA ) a = realA[i];
+            if ( !scalarB ) b = realB[i];
+            resultData[i] = a >= b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compare A and B element wise. If one of the values is scalar, compare
+     * that value to the other numeric. Only compares real components as
+     * comparison is not well defined for complex values.
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical that indexes A < B
+     *************************************************************************/
+    public static Logical less ( Numeric A, Numeric B ) {
+        validateDimensionsFatal( A, B );
+        double[] realA = A.getDataReal();
+        double[] realB = B.getDataReal();
+        double a,b;
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+        a = realA[0]; b = realB[0];
+
+        int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
+        Logical result = new Logical( newShape );
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ ) {
+            if ( !scalarA ) a = realA[i];
+            if ( !scalarB ) b = realB[i];
+            resultData[i] = a < b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compare A and B element wise. If one of the values is scalar, compare
+     * that value to the other numeric. Only compares real components as
+     * comparison is not well defined for complex values.
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical that indexes A <= B
+     *************************************************************************/
+    public static Logical leq ( Numeric A, Numeric B ) {
+        validateDimensionsFatal(A, B);
+        double[] realA = A.getDataReal();
+        double[] realB = B.getDataReal();
+        double a, b;
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+        a = realA[0];
+        b = realB[0];
+
+        int[] newShape = (realA.length > realB.length) ? A.shape() : B.shape();
+        Logical result = new Logical(newShape);
+        boolean[] resultData = result.getData();
+
+        for (int i = 0; i < resultData.length; i++) {
+            if (!scalarA) a = realA[i];
+            if (!scalarB) b = realB[i];
+            resultData[i] = a <= b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compare A and B element wise for equality with a tolerance. If one
+     * of the values is scalar, compare that value with the elements of the
+     * other
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical that indexes A == B
+     *************************************************************************/
+    public static Logical equal ( Numeric A, Numeric B, double tolerance ) {
+        validateDimensionsFatal( A, B );
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double[] realB = B.getDataReal();
+        double[] imagB = B.getDataImag();
+        double a,b,c,d;
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+        a = realA[0]; c = realB[0];
+        if ( imagA == null ) b = 0.0; else b = imagA[0];
+        if ( imagB == null ) d = 0.0; else d = imagB[0];
+
+        int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
+        Logical result = new Logical( newShape );
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ ) {
+            if ( !scalarA ) {
+                a = realA[i];
+                if ( imagA == null ) b = 0.0; else b = imagA[i];
+            }
+            if ( !scalarB ) {
+                c = realB[i];
+                if ( imagB == null ) d = 0.0; else d = imagB[i];
+            }
+            resultData[i] =
+                (Math.abs(a - c) <= tolerance) && (Math.abs(b - d) <= tolerance);
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Take !A for each element in the Logical A
+     *
+     * @param A the Logical
+     *
+     * @return a Logical with elements !A
+     *************************************************************************/
+    public static Logical not ( Logical A ) {
+        Logical result = A.copy();
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ )
+            resultData[i] = !resultData[i];
+
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Take A && B element wise
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical with elements A && b
+     *************************************************************************/
+    public static Logical and ( Logical A, Logical B ) {
+        validateDimensionsFatal( A, B );
+        boolean[] dataA = A.getData();
+        boolean[] dataB = B.getData();
+        boolean a,b;
+        boolean oneDA = dataA.length == 1, oneDB = dataB.length == 1;
+        a = dataA[0]; b = dataA[0];
+
+        int[] newShape = ( dataA.length > dataB.length ) ? A.shape() : B.shape();
+        Logical result = new Logical( newShape );
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ ) {
+            if ( !oneDA )
+                a = dataA[i];
+            if ( !oneDB )
+                b = dataB[i];
+            resultData[i] = a && b;
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Take A || B element wise
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Logical with elements A || b
+     *************************************************************************/
+    public static Logical or ( Logical A, Logical B ) {
+        validateDimensionsFatal( A, B );
+        boolean[] dataA = A.getData();
+        boolean[] dataB = B.getData();
+        boolean a,b;
+        boolean oneDA = dataA.length == 1, oneDB = dataB.length == 1;
+        a = dataA[0]; b = dataA[0];
+
+        int[] newShape = ( dataA.length > dataB.length ) ? A.shape() : B.shape();
+        Logical result = new Logical( newShape );
+        boolean[] resultData = result.getData();
+
+        for ( int i = 0; i < resultData.length; i++ ) {
+            if ( !oneDA )
+                a = dataA[i];
+            if ( !oneDB )
+                b = dataB[i];
+            resultData[i] = a || b;
+        }
+        return result;
+    }
 
 
-    /*TODO*/
+    /*Ensure that either one Numeric is scalar or both have the same shape*/
     private static void validateDimensionsFatal ( Numeric N1, Numeric N2 ) {
         if ( NDArray.dimensionsMatch(N1,N2) )
             return;
         if ( N1.isScalar() || N2.isScalar() )
             return;
         throw new IllegalDimensionException(
-                "Element wise operation: dimensions must be equal or one Numeric must be scalar"
+            "Element wise operation: dimensions must be equal or one Numeric must be scalar"
         );
     }
+
+    /*Ensure that either one Logical is 1x1 or both have the same shape*/
+    private static void validateDimensionsFatal ( Logical N1, Logical N2 ) {
+        if ( NDArray.dimensionsMatch(N1,N2) )
+            return;
+        if ( N1.getData().length == 1 || N1.getData().length == 1 )
+            return;
+        throw new IllegalDimensionException(
+            "Element wise operation: dimensions must be equal or one Logical must be 1x1"
+        );
+    }
+
 
 
 }
