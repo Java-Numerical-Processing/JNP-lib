@@ -32,6 +32,50 @@ public final class Element {
     }
 
     /**************************************************************************
+     * <p>Calculate the phase of A element wise
+     *
+     * @param A the Numeric
+     *
+     * @return a Numeric with elements phase(A)
+     *************************************************************************/
+    public static Numeric phase ( Numeric A ) {
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] dataReal = A.getDataReal();
+        double[] dataImag = A.getDataImag();
+
+        double a,b;
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = dataReal[i];
+            b = ( dataImag == null ) ? 0.0 : dataImag[i];
+            resultReal[i] = Math.atan2( b, a );
+        }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Calculate the magnitude of A element wise
+     *
+     * @param A the Numeric
+     *
+     * @return a Numeric with elements magnitude(A)
+     *************************************************************************/
+    public static Numeric mag ( Numeric A ) {
+        Numeric result = new Numeric( A.shape() );
+        double[] resultReal = result.getDataReal();
+        double[] dataReal = A.getDataReal();
+        double[] dataImag = A.getDataImag();
+
+        double a,b;
+        for ( int i = 0; i < resultReal.length; i++ ) {
+            a = dataReal[i];
+            b = ( dataImag == null ) ? 0.0 : dataImag[i];
+            resultReal[i] = Math.sqrt( a*a + b*b );
+        }
+        return result;
+    }
+
+    /**************************************************************************
      * <p>Add A and B element-wise. If A or B is scalar, add the scalar to the
      * elements of the other.
      *
@@ -78,7 +122,7 @@ public final class Element {
     }
 
     /**************************************************************************
-     * <p>Subtract A and B element-wise. If A or B is scalar, subtract the
+     * <p>Subtract B from A element-wise. If A or B is scalar, subtract the
      * scalar from the elements of the other.
      *
      * @param A the first Numeric
@@ -306,7 +350,7 @@ public final class Element {
 
         for ( int i = 0; i < resultReal.length; i++ ) {
             a = realA[i];
-            if ( imagA == null ) b = 0.0; else b = imagA[0];
+            if ( imagA == null ) b = 0.0; else b = imagA[i];
             // only do all the extra computation if we have to
             if ( b == 0 && a >=0 ) {
                 resultReal[i] = Math.log(a);
@@ -318,6 +362,46 @@ public final class Element {
             resultReal[i] = Math.log(r);
             resultImag[i] = Math.atan2(b,a);
         }
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the natural log of A element-wise.
+     *
+     * @param A Numeric of radians
+     *
+     * @return a Numeric with elements ln(A)
+     *************************************************************************/
+    public static Numeric sum ( Numeric A ) {
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double sumReal = 0, sumImag = 0;
+
+        for ( int i = 0; i < realA.length; i++ ) {
+            sumReal += realA[i];
+            sumImag += ( imagA == null ) ? 0.0 : imagA[i];
+        }
+
+        return Numeric.Scalar(sumReal, sumImag);
+    }
+
+    /**************************************************************************
+     * <p>Compute the complex conjugate of A element-wise.
+     *
+     * @param A a Numeric
+     *
+     * @return a Numeric with elements complex conjugate(A)
+     *************************************************************************/
+    public static Numeric conjugate ( Numeric A ) {
+        Numeric result = A.copy();
+        double[] imagA = result.getDataImag();
+        if ( imagA == null )
+            return result;
+
+        for ( int i = 0; i < imagA.length; i++ ) {
+            imagA[i] = -imagA[i];
+        }
+
         return result;
     }
 
@@ -879,6 +963,10 @@ public final class Element {
             return;
         if ( N1.isScalar() || N2.isScalar() )
             return;
+        if ( N1.isVector() && N2.isVector() &&
+             N1.getDataReal().length == N2.getDataReal().length)
+            return;
+
         throw new IllegalDimensionException(
             "Element wise operation: dimensions must be equal or one Numeric must be scalar"
         );

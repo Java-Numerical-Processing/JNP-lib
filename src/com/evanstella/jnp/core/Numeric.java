@@ -164,7 +164,7 @@ public class Numeric extends NDArray {
      *
      * @param dimensions the dimensions for the N-D Numeric.
      *
-     * @return a reference the initialized Logical
+     * @return a reference the initialized Numeric
      *************************************************************************/
     public static Numeric Rand ( int ...dimensions ) {
         java.util.Random R = new java.util.Random( );
@@ -181,7 +181,7 @@ public class Numeric extends NDArray {
      *
      * @param dimensions the dimensions for the N-D Numeric.
      *
-     * @return a reference the initialized Logical
+     * @return a reference the initialized Numeric
      *************************************************************************/
     public static Numeric RandComplex ( int ...dimensions ) {
         java.util.Random R = new java.util.Random( );
@@ -203,7 +203,7 @@ public class Numeric extends NDArray {
      * @param seed       the PRNG seed.
      * @param dimensions the dimensions for the N-D Numeric.
      *
-     * @return a reference the initialized Logical
+     * @return a reference the initialized Numeric
      *************************************************************************/
     public static Numeric Rand ( long seed,  int ...dimensions ) {
         java.util.Random R = new java.util.Random( seed );
@@ -222,7 +222,7 @@ public class Numeric extends NDArray {
      * @param seed       the PRNG seed.
      * @param dimensions the dimensions for the N-D Numeric.
      *
-     * @return a reference the initialized Logical
+     * @return a reference the initialized Numeric
      *************************************************************************/
     public static Numeric RandComplex ( long seed,  int ...dimensions ) {
         java.util.Random R = new java.util.Random( seed );
@@ -343,6 +343,58 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public boolean isScalar ( ) {
         return dataReal.length == 1;
+    }
+
+    /**************************************************************************
+     * <p>Check whether this Numeric is a scalar (size of 1)
+     *
+     * @return true if this Numeric is scalar
+     *************************************************************************/
+    public boolean isVector ( ) {
+        if ( shape.length == 1 )
+            return true;
+        return shape.length == 2 && (shape[0] == 1 || shape[1] == 1);
+    }
+
+    /**************************************************************************
+     * <p>If this numeric is a scalar, return the scalar value
+     *
+     * @return true if this Numeric is scalar
+     *************************************************************************/
+    public complex value ( ) {
+        if ( !isScalar() )
+            throw new IllegalDimensionException(
+                "Error using value(): Numeric must be scalar."
+            );
+        double r = dataReal[0];
+        double i = ( dataImag == null ) ? 0.0 : dataImag[0];
+        return new complex (r,i);
+    }
+
+    /**************************************************************************
+     * <p>If this numeric is a scalar, return the scalar real value
+     *
+     * @return true if this Numeric is scalar
+     *************************************************************************/
+    public double valueReal ( ) {
+        if ( !isScalar() )
+            throw new IllegalDimensionException(
+                "Error using value(): Numeric must be scalar."
+            );
+        return dataReal[0];
+    }
+
+    /**************************************************************************
+     * <p>If this numeric is a scalar, return the scalar imaginary value
+     *
+     * @return true if this Numeric is scalar
+     *************************************************************************/
+    public double valueImag ( ) {
+        if ( !isScalar() )
+            throw new IllegalDimensionException(
+                    "Error using value(): Numeric must be scalar."
+            );
+        return ( dataImag == null ) ? 0.0 : dataImag[0];
     }
 
     /**************************************************************************
