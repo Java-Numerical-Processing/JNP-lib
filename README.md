@@ -16,7 +16,7 @@ Java Numeric Processing (JNP) is a numerical computing package for Java. JNP aim
 - Graphing and visualization *(planned)*
     - a set of Java Swing components for plots and data visualization that can be easily integrated into GUI based applications *(planned)*
 - Domain specific tools *(planned)*
-    - I would like to add some domain specific functionality for signals and image processing and machine learning among other fields.
+    - I would like to add some domain specific functionality for signals and image processing, machine learning, and other fields.
 
 
 ## Documentation
