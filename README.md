@@ -27,7 +27,7 @@ All current functionality has been documented in javadoc comments in the source.
 
 More in-depth demos and documentation will be made available when the tool reaches a more complete state. Here are some quick functionality demos:
 
-###Basic data manipulation:
+### Basic data manipulation:
 Create a random row and column vector:
 ```java
 Numeric rowVector = Numeric.Rand( 1, 4 );
