@@ -29,7 +29,7 @@ More in-depth demos and documentation will be made available when the tool reach
 
 ###Basic data manipulation:
 Create a random row and column vector:
-```jshelllanguage
+```java
 Numeric rowVector = Numeric.Rand( 1, 4 );
 Numeric colVector = Numeric.Rand( 4, 1 );
 
@@ -49,7 +49,7 @@ Output:
 ```
 
 Create a 2x4 matrix by concatenating the row vector with itself along the 0th (row) dimension
-```jshelllanguage
+```java
 Numeric matrix = rowVector.concat( 0, rowVector );
 System.out.println( matrix );
 ```
@@ -60,7 +60,7 @@ System.out.println( matrix );
 ```
 
 Create a 3x4 matrix by concatenating the transpose of the column vector
-```jshelllanguage
+```java
 matrix = matrix.concat( 0, colVector.transpose() );
 System.out.println( matrix );
 ```
@@ -72,7 +72,7 @@ System.out.println( matrix );
 ```
 
 Reshape into a 2x6 matrix:
-```jshelllanguage
+```java
 matrix = matrix.reshape( 2, 6 );
 System.out.println( matrix );
 ```
@@ -82,7 +82,7 @@ System.out.println( matrix );
 [  0.2981  0.4134  0.6238  0.9725  0.5674  0.9671  ]
 ```
 Expand the 1st (column) dimension
-```jshelllanguage
+```java
 matrix.resize( 2, 9 );
 System.out.println( matrix );
 ```
@@ -95,7 +95,7 @@ System.out.println( matrix );
 ### Slicing and indexing
 
 Create a 10x10 matrix
-```jshelllanguage
+```java
 Numeric matrix = Numeric.Rand( 10, 10 );
 System.out.println( matrix );
 ```
@@ -115,7 +115,7 @@ System.out.println( matrix );
 
 
 Get a 4x5 slice of the last 4 rows and last 5 columns
-```jshelllanguage
+```java
 Numeric slice = matrix.slice( new int[]{6,10}, new int[]{5,10} );
 System.out.println( slice );
 ```
@@ -128,7 +128,7 @@ System.out.println( slice );
 ```
 
 Create a mask for all the elements in the matrix >= 0.5;
-```jshelllanguage
+```java
 Logical mask = Element.greq( slice, Numeric.Scalar( 0.5 ) );
 System.out.println( mask );
 ```
@@ -141,7 +141,7 @@ System.out.println( mask );
 ```
 
 Get a vector with only elements >= 0.5
-```jshelllanguage
+```java
 Numeric elements = slice.get( mask );
 System.out.println( elements );
 ```
@@ -153,7 +153,7 @@ System.out.println( elements );
 ### Element-wise Operations
 
 Create a 5x5 matrix
-```jshelllanguage
+```java
 Numeric matrix = Numeric.RandComplex( 5, 5 );
 System.out.println( matrix );
 ```
@@ -167,7 +167,7 @@ System.out.println( matrix );
 ```
 
 Compute sinh(z) + cos(z);
-```jshelllanguage
+```java
 matrix = Element.add( Element.sinh(matrix), Element.cos(matrix) );
 System.out.println( matrix );
 ```
@@ -181,7 +181,7 @@ System.out.println( matrix );
 ```
 
 Graph f(x) = cos(x) + x*sin(x) for x = [-50,50]
-```jshelllanguage
+```java
 Numeric X = Numeric.LinSpace( -50, 50, 1000 );
 Numeric Y = Element.add( Element.cos(X), Element.mul( X, Element.sin(X) ) );
 
