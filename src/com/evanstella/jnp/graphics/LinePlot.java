@@ -41,20 +41,20 @@ public class LinePlot extends JComponent {
 
         Graphics2D g1 = (Graphics2D) g;
         g1.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+            RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
         g1.setStroke(new BasicStroke(2));
         g1.setColor(Color.black);
         g1.drawLine(0,h,getWidth(),h);
         g1.drawLine(w,0,w,getHeight());
-        g1.drawString("0", w - 7, h + 13);
+        g1.drawString("(0,0)", w + 2, h + 15);
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setStroke(new BasicStroke((float)2));
-        g2.setColor(Color.red);
+        g2.setColor(Color.blue);
         //line1
         Polygon p = new Polygon();
         double[] XPoints = XData.getDataReal();
@@ -82,7 +82,7 @@ public class LinePlot extends JComponent {
     public void setYData ( Numeric YData ) {
         if ( !YData.isVector() && !YData.isScalar() ) {
             throw new IllegalDimensionException(
-                    "Line Plot: YData must be a vector or scalar quantity."
+                "Line Plot: YData must be a vector or scalar quantity."
             );
         }
         this.YData = YData;
