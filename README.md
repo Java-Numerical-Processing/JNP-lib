@@ -48,7 +48,7 @@ Output:
 [  0.9671  ]
 ```
 
-Create a 2x4 matrix by concatenating the row vector with itself along the 0th (row) dimension
+Create a 2x4 matrix by concatenating the row vector with itself along the 0th (row) dimension.
 ```java
 Numeric matrix = rowVector.concat( 0, rowVector );
 System.out.println( matrix );
@@ -59,7 +59,7 @@ System.out.println( matrix );
 [  0.3965  0.8773  0.2981  0.4134  ]
 ```
 
-Create a 3x4 matrix by concatenating the transpose of the column vector
+Create a 3x4 matrix by concatenating the transpose of the column vector.
 ```java
 matrix = matrix.concat( 0, colVector.transpose() );
 System.out.println( matrix );
@@ -81,7 +81,7 @@ System.out.println( matrix );
 [  0.3965  0.8773  0.2981  0.4134  0.3965  0.8773  ]
 [  0.2981  0.4134  0.6238  0.9725  0.5674  0.9671  ]
 ```
-Expand the 1st (column) dimension
+Expand the 1st (column) dimension.
 ```java
 matrix.resize( 2, 9 );
 System.out.println( matrix );
@@ -94,7 +94,7 @@ System.out.println( matrix );
 
 ### Slicing and indexing
 
-Create a 10x10 matrix
+Create a 10x10 matrix.
 ```java
 Numeric matrix = Numeric.Rand( 10, 10 );
 System.out.println( matrix );
@@ -114,7 +114,7 @@ System.out.println( matrix );
 ```
 
 
-Get a 4x5 slice of the last 4 rows and last 5 columns
+Get a 4x5 slice of the last 4 rows and last 5 columns.
 ```java
 Numeric slice = matrix.slice( new int[]{6,10}, new int[]{5,10} );
 System.out.println( slice );
@@ -127,7 +127,7 @@ System.out.println( slice );
 [  0.8162  0.5438  0.1092  0.7767  0.0869  ]
 ```
 
-Create a mask for all the elements in the matrix >= 0.5;
+Create a mask for all the elements in the matrix >= 0.5.
 ```java
 Logical mask = Element.greq( slice, Numeric.Scalar( 0.5 ) );
 System.out.println( mask );
@@ -140,7 +140,7 @@ System.out.println( mask );
 [ 1 1 0 1 0 ]
 ```
 
-Get a vector with only elements >= 0.5
+Get a vector with only elements >= 0.5.
 ```java
 Numeric elements = slice.get( mask );
 System.out.println( elements );
@@ -152,7 +152,7 @@ System.out.println( elements );
 
 ### Element-wise Operations
 
-Create a 5x5 matrix
+Create a 5x5 matrix.
 ```java
 Numeric matrix = Numeric.RandComplex( 5, 5 );
 System.out.println( matrix );
@@ -166,7 +166,7 @@ System.out.println( matrix );
 [   0.1134 +0.4378i   0.4449 +0.7994i   0.7209 +0.9965i   0.7296 +0.0792i   0.2250 +0.2129i   ]
 ```
 
-Compute sinh(z) + cos(z);
+Compute sinh(z) + cos(z).
 ```java
 matrix = Element.add( Element.sinh(matrix), Element.cos(matrix) );
 System.out.println( matrix );
@@ -180,7 +180,7 @@ System.out.println( matrix );
 [   1.1933 +0.3756i   1.5272 +0.4072i   1.5826 +0.2952i   1.5414 +0.0482i   1.2188 +0.1688i   ]
 ```
 
-Graph f(x) = cos(x) + x*sin(x) for x = [-50,50]
+Graph f(x) = cos(x) + x*sin(x) for x = [-50,50].
 ```java
 Numeric X = Numeric.LinSpace( -50, 50, 1000 );
 Numeric Y = Element.add( Element.cos(X), Element.mul( X, Element.sin(X) ) );
@@ -191,8 +191,8 @@ frame.setTitle("JNP Plot");
 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 frame.setLocationRelativeTo(null);
 
-LinePlot draw = new LinePlot( X, Y, 800, 600 );
-frame.add(draw);
+LinePlot plot = new LinePlot( X, Y, 800, 600 );
+frame.add(plot);
 frame.setVisible(true);
 ```
 ![Line Plot](resources/DemoPlot1.PNG)
