@@ -155,6 +155,26 @@ public class Logical extends NDArray {
     }
 
     /**************************************************************************
+     * <p>Check whether this Numeric is a scalar (size of 1)
+     *
+     * @return true if this Numeric is scalar
+     *************************************************************************/
+    public boolean isScalar ( ) {
+        return data.length == 1;
+    }
+
+    /**************************************************************************
+     * <p>Check whether this Logical is a vector
+     *
+     * @return true if this Numeric is scalar
+     *************************************************************************/
+    public boolean isVector ( ) {
+        if ( shape.length == 1 )
+            return true;
+        return shape.length == 2 && (shape[0] == 1 || shape[1] == 1);
+    }
+
+    /**************************************************************************
      * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions. If this is the case, an IllegalDimensionException will be

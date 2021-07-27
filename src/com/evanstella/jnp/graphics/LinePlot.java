@@ -88,8 +88,8 @@ public class LinePlot extends JComponent {
         g2.setColor(Color.blue);
 
         Polygon p = new Polygon();
-        double[] XPoints = XData.getDataReal();
-        double[] YPoints = YData.getDataReal();
+        double[] XPoints = XData.getData();
+        double[] YPoints = YData.getData();
 
         for ( int x = 0; x < XPoints.length; x++ ) {
             p.addPoint( (int) (w+scale * XPoints[x]), (int) (h - scale * YPoints[x]) );

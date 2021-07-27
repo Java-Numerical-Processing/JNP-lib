@@ -89,6 +89,20 @@ public abstract class NDArray {
      *************************************************************************/
     public abstract void resize ( int ...dimensions );
 
+    /*TODO*/
+    public abstract boolean isScalar ( );
+
+    /*TODO*/
+    public abstract boolean isVector ( );
+
+    /*TODO*/
+    public int getSize ( ) {
+        int size = 1;
+        for ( int n : shape )
+            size *= n;
+        return size;
+    }
+
     /**************************************************************************
      * <p>Converts the inputted subscript to a linear index for this NDArray
      *
