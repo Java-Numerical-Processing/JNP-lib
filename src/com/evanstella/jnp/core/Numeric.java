@@ -33,15 +33,14 @@ import com.evanstella.jnp.math.Element;
  * as long as there is no complex data stored in the numeric, the dataImag
  * field will be null and Numeric will only store a double for each real value.
  * Once complex data is added, the dataImag field is initialized with the same
- * size of the dataReal, meaning complex Numerics are twice as large in memory
+ * size of the data, meaning complex Numerics are twice as large in memory
  * as real Numerics of the same number of elements.
  *
  * @author Evan Stella
  *****************************************************************************/
 public class Numeric extends NDArray {
 
-    protected double[] dataReal;
-    protected double[] dataImag;
+    protected double[] data;
 
 
     /**************************************************************************
@@ -60,8 +59,7 @@ public class Numeric extends NDArray {
             throw new IllegalDimensionException(
                 "Dimension lengths must be positive and non-zero."
             );
-        dataReal = new double[size];
-        dataImag = null;
+        data = new double[size];
     }
 
 
@@ -72,7 +70,7 @@ public class Numeric extends NDArray {
      * @param indata The array to initialize from
      *************************************************************************/
     public Numeric ( double[] indata ) {
-        dataReal = indata;
+        data = indata;
         shape = new int[]{ indata.length };
     }
 
@@ -83,7 +81,7 @@ public class Numeric extends NDArray {
      * @param indata The array to initialize from
      *************************************************************************/
     public Numeric ( double[][] indata ) {
-        dataReal = new double[indata.length * indata[0].length];
+        data = new double[indata.length * indata[0].length];
         int ind = 0;
         for ( double[] row : indata ) {
             if ( row.length != indata[0].length )
@@ -91,60 +89,9 @@ public class Numeric extends NDArray {
                         "Input dimensions must be consistent."
                 );
             for ( double d : row )
-                dataReal[ind++] = d;
+                data[ind++] = d;
         }
         shape = new int[]{ indata.length, indata[0].length };
-    }
-
-    /**************************************************************************
-     * <p>Class constructor. Initialize a Numeric from a double[]. Only a
-     * shallow copy of the array is made
-     *
-     * @param inDataReal The array to initialize the real data component from
-     * @param inDataImag The array to initialize the imaginary data component
-     *                   from
-     *************************************************************************/
-    public Numeric ( double[] inDataReal, double[] inDataImag ) {
-        if ( inDataImag.length != inDataReal.length )
-            throw new IllegalDimensionException(
-                "Real and imaginary data must be the same size"
-            );
-
-        dataReal = inDataReal;
-        dataImag = inDataImag;
-        shape = new int[]{ inDataReal.length };
-    }
-
-    /**************************************************************************
-     * <p>Class constructor. Initialize a Numeric from a double[][]. Makes a
-     * a deep copy in order to aggregate the double[][] into a double[].
-     *
-     * @param inDataReal The array to initialize the real data component from
-     * @param inDataImag The array to initialize the imaginary data component
-     *                   from
-     *************************************************************************/
-    public Numeric ( double[][] inDataReal, double[][] inDataImag ) {
-        if ( inDataImag.length != inDataReal.length ||
-             inDataImag[0].length != inDataReal[0].length)
-            throw new IllegalDimensionException(
-                "Real and imaginary data must be the same size"
-            );
-        dataReal = new double[inDataReal.length * inDataReal[0].length];
-        dataImag = new double[inDataImag.length * inDataImag[0].length];
-        int ind = 0;
-        for ( int i = 0; i < inDataReal.length; i++ ) {
-            if ( inDataReal[i].length != inDataReal[0].length ||
-                 inDataImag[i].length != inDataImag[0].length )
-                throw new IllegalDimensionException(
-                    "Input dimensions must be consistent."
-                );
-            for ( int j = 0; j < inDataReal[i].length; i++ ) {
-                dataReal[ind] = inDataReal[i][j];
-                dataImag[ind] = inDataImag[i][j];
-                ind++;
-            }
-        }
-        shape = new int[]{ inDataReal.length, inDataReal[0].length };
     }
 
     /**************************************************************************
@@ -156,7 +103,7 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public static Numeric Ones ( int ...dimensions ) {
         Numeric N = new Numeric( dimensions );
-        java.util.Arrays.fill(N.dataReal, 1.0);
+        java.util.Arrays.fill(N.data, 1.0);
         return N;
     }
 
@@ -183,17 +130,6 @@ public class Numeric extends NDArray {
         return new Numeric( new double[]{real} );
     }
 
-    /**************************************************************************
-     * <p>Initializes a 1x1 scalar Numeric with the inputted complex data.
-     *
-     * @param real   the real component of the scalar
-     * @param imag   the imaginary component of the scalar
-     *
-     * @return a reference the initialized Numeric
-     *************************************************************************/
-    public static Numeric Scalar ( double real, double imag ) {
-        return new Numeric( new double[]{real}, new double[]{imag} );
-    }
 
     /**************************************************************************
      * <p>Initializes a Numeric with random real values using java.util.Random.
@@ -206,30 +142,10 @@ public class Numeric extends NDArray {
         java.util.Random R = new java.util.Random( );
         Numeric L = new Numeric( dimensions );
 
-        for ( int i = 0; i < L.dataReal.length; i++ )
-            L.dataReal[i] = R.nextDouble();
+        for ( int i = 0; i < L.data.length; i++ )
+            L.data[i] = R.nextDouble();
 
         return L;
-    }
-
-    /**************************************************************************
-     * <p>Initializes a Numeric with random real values using java.util.Random.
-     *
-     * @param dimensions the dimensions for the N-D Numeric.
-     *
-     * @return a reference the initialized Numeric
-     *************************************************************************/
-    public static Numeric RandComplex ( int ...dimensions ) {
-        java.util.Random R = new java.util.Random( );
-        Numeric N = new Numeric( dimensions );
-        N.dataImag = new double[N.dataReal.length];
-
-        for ( int i = 0; i < N.dataReal.length; i++ ) {
-            N.dataReal[i] = R.nextDouble();
-            N.dataImag[i] = R.nextDouble();
-        }
-
-        return N;
     }
 
     /**************************************************************************
@@ -245,30 +161,8 @@ public class Numeric extends NDArray {
         java.util.Random R = new java.util.Random( seed );
         Numeric N = new Numeric( dimensions );
 
-        for ( int i = 0; i < N.dataReal.length; i++ )
-            N.dataReal[i] = R.nextDouble();
-
-        return N;
-    }
-
-    /**************************************************************************
-     * <p>Initializes a Numeric with random real values with a seed using
-     * java.util.Random.
-     *
-     * @param seed       the PRNG seed.
-     * @param dimensions the dimensions for the N-D Numeric.
-     *
-     * @return a reference the initialized Numeric
-     *************************************************************************/
-    public static Numeric RandComplex ( long seed,  int ...dimensions ) {
-        java.util.Random R = new java.util.Random( seed );
-        Numeric N = new Numeric( dimensions );
-        N.dataImag = new double[N.dataReal.length];
-
-        for ( int i = 0; i < N.dataReal.length; i++ ) {
-            N.dataReal[i] = R.nextDouble();
-            N.dataImag[i] = R.nextDouble();
-        }
+        for ( int i = 0; i < N.data.length; i++ )
+            N.data[i] = R.nextDouble();
 
         return N;
     }
@@ -284,7 +178,7 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public static Numeric LinSpace ( double start, double end, int numPts ) {
         Numeric linspace = new Numeric( 1, numPts );
-        double[] data = linspace.dataReal;
+        double[] data = linspace.data;
 
         double step = ( end - start ) / (numPts-1);
         double val = start;
@@ -335,7 +229,7 @@ public class Numeric extends NDArray {
     public static Numeric Eye ( int r, int c ) {
         Numeric eye = new Numeric( r, c );
         for ( int i = 0; i < r && i < c; i++ ) {
-            eye.dataReal[i * c + i] = 1;
+            eye.data[i * c + i] = 1;
         }
         return eye;
     }
@@ -358,16 +252,11 @@ public class Numeric extends NDArray {
             "Input must be a row or column vector (shape = N or 1xN or Nx1)."
         );
 
-        int size = N.dataReal.length;
-        boolean isComplex = N.dataImag != null;
+        int size = N.data.length;
         Numeric result = new Numeric( size, size );
-        if ( isComplex )
-            result.dataImag = new double[result.dataReal.length];
-            for ( int ind, i = 0; i < size; i++ ) {
+        for ( int ind, i = 0; i < size; i++ ) {
             ind = i * size + i;
-            result.dataReal[ind] = N.dataReal[i];
-            if ( isComplex )
-                result.dataImag[ind] = N.dataImag[i];
+            result.data[ind] = N.data[i];
         }
         return result;
     }
@@ -378,7 +267,7 @@ public class Numeric extends NDArray {
      * @return true if this Numeric is scalar
      *************************************************************************/
     public boolean isScalar ( ) {
-        return dataReal.length == 1;
+        return data.length == 1;
     }
 
     /**************************************************************************
@@ -393,44 +282,16 @@ public class Numeric extends NDArray {
     }
 
     /**************************************************************************
-     * <p>If this numeric is a scalar, return the scalar value
-     *
-     * @return true if this Numeric is scalar
-     *************************************************************************/
-    public complex value ( ) {
-        if ( !isScalar() )
-            throw new IllegalDimensionException(
-                "Error using value(): Numeric must be scalar."
-            );
-        double r = dataReal[0];
-        double i = ( dataImag == null ) ? 0.0 : dataImag[0];
-        return new complex (r,i);
-    }
-
-    /**************************************************************************
      * <p>If this numeric is a scalar, return the scalar real value
      *
      * @return true if this Numeric is scalar
      *************************************************************************/
-    public double valueReal ( ) {
+    public double value ( ) {
         if ( !isScalar() )
             throw new IllegalDimensionException(
                 "Error using value(): Numeric must be scalar."
             );
-        return dataReal[0];
-    }
-
-    /**************************************************************************
-     * <p>If this numeric is a scalar, return the scalar imaginary value
-     *
-     * @return true if this Numeric is scalar
-     *************************************************************************/
-    public double valueImag ( ) {
-        if ( !isScalar() )
-            throw new IllegalDimensionException(
-                    "Error using value(): Numeric must be scalar."
-            );
-        return ( dataImag == null ) ? 0.0 : dataImag[0];
+        return data[0];
     }
 
     /**************************************************************************
@@ -439,32 +300,8 @@ public class Numeric extends NDArray {
      *
      * @return a reference to the Logical data.
      *************************************************************************/
-    public double[] getDataReal ( ) {
-        return dataReal;
-    }
-
-    /**************************************************************************
-     * <p>Gets a reference to the raw imaginary data contained in the Logical. Only
-     * recommended if you need fast access to the data in the object. If the
-     * Numeric contains only real numbers, the imaginary component is null.
-     *
-     * @return a reference to the Logical data.
-     *************************************************************************/
-    public double[] getDataImag ( ) {
-        return dataImag;
-    }
-
-    /**************************************************************************
-     * <p>Initialize the imaginary component of the Numeric to zero. If the data
-     * is not currently complex, this will double it's size in memory. This
-     * must be done before doing complex numeric operations if the data is
-     * not currently complex.
-     *
-     * @return a reference to the initialized complex data.
-     *************************************************************************/
-    public double[] initializeDataImag ( ) {
-        dataImag = new double[dataReal.length];
-        return dataImag;
+    public double[] getData ( ) {
+        return data;
     }
 
     /**************************************************************************
@@ -473,40 +310,17 @@ public class Numeric extends NDArray {
      * dimensions. If this is the case, an IllegalDimensionException will be
      * thrown.
      *
-     * @param inDataReal    the data to set (real component)
+     * @param indata    the data to set (real component)
      * @param sub           the subscript at which to set the data
      *************************************************************************/
-    public void set ( double inDataReal, int[] sub ) {
+    public void set ( double indata, int[] sub ) {
         int ind = sub2ind( shape, sub );
-        if ( ind >= dataReal.length ) {
+        if ( ind >= data.length ) {
             throw new IllegalDimensionException(
                 "Subscript out of bounds for dimensions"
             );
         }
-        dataReal[ind] = inDataReal;
-    }
-
-    /**************************************************************************
-     * <p>Sets the value of the data at the subscript with the inputted value
-     * WITHOUT resizing if the subscript is out of bounds of the data
-     * dimensions. If this is the case, an IllegalDimensionException will be
-     * thrown.
-     *
-     * @param inDataReal    the data to set (real component)
-     * @param inDataImag    the data to set (imaginary component)
-     * @param sub           the subscript at which to set the data
-     *************************************************************************/
-    public void set ( double inDataReal, double inDataImag, int[] sub ) {
-        int ind = sub2ind( shape, sub );
-        if ( ind >= dataReal.length ) {
-            throw new IllegalDimensionException(
-                    "Subscript out of bounds for dimensions"
-            );
-        }
-        dataReal[ind] = inDataReal;
-        if ( dataImag == null )
-            dataImag = new double[dataReal.length];
-        dataImag[ind] = inDataImag;
+        data[ind] = indata;
     }
 
     /**************************************************************************
@@ -514,27 +328,11 @@ public class Numeric extends NDArray {
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions.
      *
-     * @param inDataReal    the data to set (real component)
+     * @param indata    the data to set (real component)
      * @param ind           the index at which to set the data
      *************************************************************************/
-    public void set ( double inDataReal, int ind ) {
-        dataReal[ind] = inDataReal;
-    }
-
-    /**************************************************************************
-     * <p>Sets the value of the data at the subscript with the inputted value
-     * WITHOUT resizing if the subscript is out of bounds of the data
-     * dimensions.
-     *
-     * @param inDataReal    the data to set (real component)
-     * @param inDataImag    the data to set (imaginary component)
-     * @param ind           the index at which to set the data
-     *************************************************************************/
-    public void set ( double inDataReal, double inDataImag, int ind ) {
-        dataReal[ind] = inDataReal;
-        if ( dataImag == null )
-            dataImag = new double[dataReal.length];
-        dataImag[ind] = inDataImag;
+    public void set ( double indata, int ind ) {
+        data[ind] = indata;
     }
 
     /**************************************************************************
@@ -543,12 +341,12 @@ public class Numeric extends NDArray {
      * resized. This can be slower on larger data sets as this
      * this operation is O(n) for data of size n.
      *
-     * @param inDataReal    the data to set (real component)
+     * @param indata    the data to set (real component)
      * @param sub           the subscript at which to set the data
      *************************************************************************/
-    public void setAt ( double inDataReal, int[] sub ) {
+    public void setAt ( double indata, int[] sub ) {
         int ind = sub2ind( sub );
-        if ( ind >= dataReal.length ) {
+        if ( ind >= data.length ) {
             int[] newDims = new int[shape.length];
             for ( int i = 0; i < shape.length; i++ ) {
                 if ( shape[i] > sub[i] )
@@ -559,36 +357,7 @@ public class Numeric extends NDArray {
             resizeNoCheck( newDims );
             ind = sub2ind( sub );
         }
-        dataReal[ind] = inDataReal;
-    }
-
-    /**************************************************************************
-     * <p>Sets the value of the data at the subscript with the inputted value. If
-     * the subscript is out of bounds of the data dimensions, the data will be
-     * resized. This can be slower on larger data sets as this
-     * this operation is O(n) for data of size n.
-     *
-     * @param inDataReal    the data to set (real component)
-     * @param inDataImag    the data to set (imaginary component)
-     * @param sub           the subscript at which to set the data
-     *************************************************************************/
-    public void setAt ( double inDataReal, double inDataImag, int[] sub ) {
-        int ind = sub2ind( sub );
-        if ( ind >= dataReal.length ) {
-            int[] newDims = new int[shape.length];
-            for ( int i = 0; i < shape.length; i++ ) {
-                if ( shape[i] > sub[i] )
-                    newDims[i] = shape[i];
-                else
-                    newDims[i] = sub[i] + 1;
-            }
-            resizeNoCheck( newDims );
-            ind = sub2ind( sub );
-        }
-        dataReal[ind] = inDataReal;
-        if ( dataImag == null )
-            dataImag = new double[dataReal.length];
-        dataImag[ind] = inDataImag;
+        data[ind] = indata;
     }
 
     /**************************************************************************
@@ -610,36 +379,9 @@ public class Numeric extends NDArray {
             );
         }
 
-        for ( int i = 0; i < dataReal.length; i++ ) {
+        for ( int i = 0; i < data.length; i++ ) {
             if ( Inds.data[i] ) {
-                dataReal[i] = val;
-            }
-        }
-    }
-
-    /**************************************************************************
-     * <p>Indexes the Numeric using the inputted Logical as a mask and sets the
-     * indexed values to val.
-     *
-     * @param valReal   The real component of the value to set the indexed
-     *                  elements to
-     * @param valImag   The imaginary component of the value
-     * @param Inds      Logical to be used as an index into the data
-     *************************************************************************/
-    public void set ( double valReal, double valImag, Logical Inds ) {
-        if ( !NDArray.dimensionsMatch( this, Inds ) )
-            throw new IllegalDimensionException(
-                    "Index dimensions must be equal to data dimensions."
-            );
-
-        boolean isComplex = ( valImag != 0 );
-        if ( isComplex && dataImag == null )
-            dataImag = new double[dataReal.length];
-
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            if ( Inds.data[i] ) {
-                dataReal[i] = valReal;
-                if ( isComplex ) dataImag[i] = valImag;
+                data[i] = val;
             }
         }
     }
@@ -648,25 +390,19 @@ public class Numeric extends NDArray {
      * <p>Indexes the Numeric using the inputted Logical as a mask and sets the
      * indexed values to val + current value.
      *
-     * @param valReal   The real component of the value to set the indexed
+     * @param val   The real component of the value to set the indexed
      *                  elements to
-     * @param valImag   The imaginary component of the value
      * @param Inds      Logical to be used as an index into the data
      *************************************************************************/
-    public void setAdd ( double valReal, double valImag, Logical Inds ) {
+    public void setAdd ( double val, Logical Inds ) {
         if ( !NDArray.dimensionsMatch( this, Inds ) )
             throw new IllegalDimensionException(
                     "Index dimensions must be equal to data dimensions."
             );
 
-        boolean isComplex = ( valImag != 0 );
-        if ( isComplex && dataImag == null )
-            dataImag = new double[dataReal.length];
-
-        for ( int i = 0; i < dataReal.length; i++ ) {
+        for ( int i = 0; i < data.length; i++ ) {
             if ( Inds.data[i] ) {
-                dataReal[i] += valReal;
-                if ( isComplex ) dataImag[i] += valImag;
+                data[i] += val;
             }
         }
     }
@@ -675,35 +411,20 @@ public class Numeric extends NDArray {
      * <p>Indexes the Numeric using the inputted Logical as a mask and sets the
      * indexed values to val * current value.
      *
-     * @param valReal   The real component of the value to set the indexed
+     * @param val The real component of the value to set the indexed
      *                  elements to
-     * @param valImag   The imaginary component of the value
      * @param Inds      Logical to be used as an index into the data
      *************************************************************************/
-    public void setMul ( double valReal, double valImag, Logical Inds ) {
+    public void setMul ( double val, Logical Inds ) {
         if ( !NDArray.dimensionsMatch( this, Inds ) )
             throw new IllegalDimensionException(
                     "Index dimensions must be equal to data dimensions."
             );
 
-        boolean isComplex = ( valImag != 0 );
-        if ( isComplex && dataImag == null )
-            dataImag = new double[dataReal.length];
-
         double x,y,u,v;
-        for ( int i = 0; i < dataReal.length; i++ ) {
+        for ( int i = 0; i < data.length; i++ ) {
             if ( Inds.data[i] ) {
-                if ( isComplex ) {
-                    x = dataReal[i];
-                    y = dataImag[i];
-                    u = valReal;
-                    v = valImag;
-                    dataReal[i] = x*u - y*v;
-                    dataImag[i] = x*v + y*u;
-                }
-                else {
-                    dataReal[i] = dataReal[i] * valReal;
-                }
+                data[i] = data[i] * val;
             }
         }
     }
@@ -724,18 +445,13 @@ public class Numeric extends NDArray {
         );
         // get number of elements
         int numElements = 0;
-        for ( int i = 0; i < dataReal.length; i++ )
+        for ( int i = 0; i < data.length; i++ )
             if ( Inds.data[i] ) numElements++;
 
         Numeric result = new Numeric( 1, numElements );
-        boolean isComplex = dataImag != null;
-        if ( isComplex )
-            result.dataImag = new double[result.dataReal.length];
-        for ( int ind = 0, i = 0; i < dataReal.length; i++ ) {
+        for ( int ind = 0, i = 0; i < data.length; i++ ) {
             if ( Inds.data[i] ) {
-                result.dataReal[ind] = dataReal[i];
-                if ( isComplex ) result.dataImag[ind] = dataImag[i];
-                ind++;
+                result.data[ind] = data[i];
             }
         }
         return result;
@@ -750,15 +466,12 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public Numeric get ( int... sub ) {
         int ind = sub2ind( shape, sub );
-        if ( ind >= dataReal.length )
+        if ( ind >= data.length )
             throw new IllegalDimensionException(
                 "Subscript out of range of data dimensions");
 
         Numeric ret = new Numeric( 1,1 );
-        ret.dataReal[0] = dataReal[ind];
-        if ( dataImag != null ) {
-            ret.dataImag = new double[]{ dataImag[ind] };
-        }
+        ret.data[0] = data[ind];
         return ret;
     }
 
@@ -771,15 +484,12 @@ public class Numeric extends NDArray {
      * @return a reference to the initialized scalar.
      *************************************************************************/
     public Numeric get ( int ind ) {
-        if ( ind >= dataReal.length )
+        if ( ind >= data.length )
             throw new IllegalDimensionException(
                 "Subscript out of range of data dimensions");
 
         Numeric ret = new Numeric( 1,1 );
-        ret.dataReal[0] = dataReal[ind];
-        if ( dataImag != null ) {
-            ret.dataImag = new double[]{ dataImag[ind] };
-        }
+        ret.data[0] = data[ind];
         return ret;
     }
 
@@ -791,11 +501,11 @@ public class Numeric extends NDArray {
      * @return the linear index of the max value in the data
      *************************************************************************/
     public int findMax ( ) {
-        double max = dataReal[0];
+        double max = data[0];
         int ind = 0;
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            if ( dataReal[i] > max) {
-                max = dataReal[i];
+        for ( int i = 0; i < data.length; i++ ) {
+            if ( data[i] > max) {
+                max = data[i];
                 ind = i;
             }
         }
@@ -810,11 +520,11 @@ public class Numeric extends NDArray {
      * @return the linear index of the max value in the data
      *************************************************************************/
     public int findAbsMax ( ) {
-        double max = dataReal[0];
+        double max = data[0];
         double absVal, tmp;
         int ind = 0;
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            tmp = dataReal[i];
+        for ( int i = 0; i < data.length; i++ ) {
+            tmp = data[i];
             absVal = (tmp <= 0.0) ? 0.0 - tmp : tmp;
             if ( absVal > max) {
                 max = absVal;
@@ -832,11 +542,11 @@ public class Numeric extends NDArray {
      * @return the linear index of the min value in the data
      *************************************************************************/
     public int findMin ( ) {
-        double min = dataReal[0];
+        double min = data[0];
         int ind = 0;
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            if ( dataReal[i] < min) {
-                min = dataReal[i];
+        for ( int i = 0; i < data.length; i++ ) {
+            if ( data[i] < min) {
+                min = data[i];
                 ind = i;
             }
         }
@@ -851,11 +561,11 @@ public class Numeric extends NDArray {
      * @return the linear index of the min value in the data
      *************************************************************************/
     public int findAbsMin ( ) {
-        double min = dataReal[0];
+        double min = data[0];
         double absVal, tmp;
         int ind = 0;
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            tmp = dataReal[i];
+        for ( int i = 0; i < data.length; i++ ) {
+            tmp = data[i];
             absVal = (tmp <= 0.0) ? 0.0 - tmp : tmp;
             if ( absVal < min) {
                 min = absVal;
@@ -878,7 +588,7 @@ public class Numeric extends NDArray {
         int size = 1;
         for ( int n : dimensions )
             size *= n;
-        if ( size != dataReal.length )
+        if ( size != data.length )
             throw new IllegalDimensionException(
                 "Invalid Dimensions. Number of elements must be the same"
             );
@@ -909,13 +619,7 @@ public class Numeric extends NDArray {
         int c = transposed.shape[1];
         for ( int i = 0; i < r; i++ )
             for (int j = 0; j < c; j++)
-                transposed.dataReal[i*c+j] = dataReal[j*r+i];
-        if ( dataImag != null ) {
-            transposed.dataImag = new double[transposed.dataReal.length];
-            for ( int i = 0; i < r; i++ )
-                for (int j = 0; j < c; j++)
-                    transposed.dataImag[i*c+j] = dataImag[j*r+i];
-        }
+                transposed.data[i*c+j] = data[j*r+i];
 
         return transposed;
     }
@@ -926,7 +630,7 @@ public class Numeric extends NDArray {
      * @return a reference to the flattened Numeric
      *************************************************************************/
     public Numeric flatten ( ) {
-        Numeric flat = new Numeric( 1, dataReal.length );
+        Numeric flat = new Numeric( 1, data.length );
         copyData( flat );
         return flat;
     }
@@ -990,27 +694,19 @@ public class Numeric extends NDArray {
                 throw new IllegalDimensionException(
                         "Resized dimensions must be greater than current dimensions"
                 );
-
         int newSize = 1;
         for ( int n : dimensions )
             newSize *= n;
-
-        boolean resizeImag = dataImag != null;
-        double[] newDataReal = new double[newSize];
-        double[] newDataImag = null;
-        if ( resizeImag ) newDataImag = new double[newSize];
-
+        double[] newdata = new double[newSize];
         int[] sub;
         int newInd;
-        for ( int i = 0; i < dataReal.length; i++ ) {
+
+        for ( int i = 0; i < data.length; i++ ) {
             sub = ind2sub( shape, i );
             newInd = sub2ind( dimensions, sub );
-            newDataReal[newInd] = dataReal[i];
-            if ( resizeImag )
-                newDataImag[newInd] = dataImag[i];
+            newdata[newInd] = data[i];
         }
-        dataReal = newDataReal;
-        dataImag = newDataImag;
+        data = newdata;
         shape = dimensions;
     }
 
@@ -1058,11 +754,10 @@ public class Numeric extends NDArray {
                     "Slice indices must be positive");
         }
 
-        double[][] newData = sliceData( dimensions, newShape, size );
+        double[] newData = sliceData( dimensions, newShape, size );
 
         Numeric sliced = new Numeric( newShape );
-        sliced.dataReal = newData[0];
-        sliced.dataImag = newData[1];
+        sliced.data = newData;
         return sliced;
     }
 
@@ -1094,16 +789,13 @@ public class Numeric extends NDArray {
         newShape[dimension] = shape[dimension] + N.shape[dimension];
         catted.resizeNoCheck( newShape );
 
-        boolean catImag = dataImag != null;
-        if ( catImag ) catted.dataImag = new double[catted.dataReal.length];
         int[] sub;
         int ind;
-        for ( int i = 0; i < N.dataReal.length; i++ ) {
+        for ( int i = 0; i < N.data.length; i++ ) {
             sub = ind2subNoCheck( N.shape, i );
             sub[dimension] += shape[dimension];
             ind = sub2indNoCheck( newShape, sub );
-            catted.dataReal[ind] = N.dataReal[i];
-            if ( catImag ) catted.dataImag[ind] = N.dataImag[i];
+            catted.data[ind] = N.data[i];
         }
 
         return catted;
@@ -1117,9 +809,8 @@ public class Numeric extends NDArray {
      * @return a string representation of the Logical
      *************************************************************************/
     public String toString ( ) {
-        boolean isComplex = dataImag != null;
         int maxInd = findAbsMax( );
-        double max = dataReal[maxInd];
+        double max = data[maxInd];
         int L = String.format( "%.4f", max ).length();
 
         StringBuilder s = new StringBuilder(super.toString() + " <Numeric>\n");
@@ -1133,40 +824,22 @@ public class Numeric extends NDArray {
                 col = shape[0];
             }
             for ( int i = 0; i < row; i++ ) {
-                if ( dataReal[i * col] < 0 )
-                    if ( isComplex )
-                        s.append("[  ");
-                    else
-                        s.append("[ ");
+                if ( data[i * col] < 0 )
+                    s.append("[ ");
                 else
-                    if ( isComplex )
-                        s.append("[   ");
-                    else
-                        s.append("[  ");
+                    s.append("[  ");
                 for ( int j = 0; j < col; j++ ) {
                     String tmp;
-                    double real = dataReal[i * col + j];
+                    double real = data[i * col + j];
                     if ( real < 0 )
-                        tmp = String.format("%" + (L+1) + ".4f", dataReal[i * col + j]);
+                        tmp = String.format("%" + (L+1) + ".4f", data[i * col + j]);
                     else
-                        tmp = String.format("%" + L + ".4f", dataReal[i * col + j]);
-                    if ( isComplex ) {
-                        double img = dataImag[i * col + j];
-                        if ( img < 0 )
-                            tmp = tmp + " -" + String.format("%" + L + ".4fi", -img);
-                        else
-                            tmp = tmp + " +" + String.format("%" + L + ".4fi", img);
-                    }
-                    if ( j < col-1 && dataReal[i * col + j+1] < 0 )
-                        if ( isComplex )
-                            s.append(tmp).append("  ");
-                        else
-                            s.append(tmp).append(" ");
+                        tmp = String.format("%" + L + ".4f", data[i * col + j]);
+
+                    if ( j < col-1 && data[i * col + j+1] < 0 )
+                        s.append(tmp).append(" ");
                     else
-                        if ( isComplex )
-                            s.append(tmp).append("   ");
-                        else
-                            s.append(tmp).append("  ");
+                        s.append(tmp).append("  ");
                 }
                 s.append("]\n");
             }
@@ -1189,16 +862,9 @@ public class Numeric extends NDArray {
             return true;
         if ( !NDArray.dimensionsMatch( this, N ) )
             return false;
-        boolean isComplex = dataImag != null;
-        if ( isComplex && N.dataImag == null )
-            return false;
-        else if ( !isComplex && N.dataImag != null )
-            return false;
 
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            if ( this.dataReal[i] != N.dataReal[i] )
-                return false;
-            if ( isComplex && this.dataImag[i] != N.dataImag[i] )
+        for ( int i = 0; i < data.length; i++ ) {
+            if ( this.data[i] != N.data[i] )
                 return false;
         }
 
@@ -1221,24 +887,12 @@ public class Numeric extends NDArray {
         if ( !NDArray.dimensionsMatch( this, N ) )
             return false;
 
-        boolean isComplex = dataImag != null;
-        if ( isComplex && N.dataImag == null )
-            return false;
-        else if ( !isComplex && N.dataImag != null )
-            return false;
-
         double diff;
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            diff = this.dataReal[i] - N.dataReal[i];
+        for ( int i = 0; i < data.length; i++ ) {
+            diff = this.data[i] - N.data[i];
             diff = (diff <= 0.0) ? 0.0 - diff : diff; // get abs value
             if ( diff > tolerance )
                 return false;
-            if ( isComplex ) {
-                diff = Math.abs(this.dataImag[i] - N.dataImag[i]);
-                diff = (diff <= 0.0) ? 0.0 - diff : diff;
-                if (diff > tolerance)
-                    return false;
-            }
         }
 
         return true;
@@ -1255,27 +909,20 @@ public class Numeric extends NDArray {
         for ( int n : dimensions )
             newSize *= n;
 
-        boolean resizeImag = dataImag != null;
-        double[] newDataReal = new double[newSize];
-        double[] newDataImag = null;
-        if ( resizeImag ) newDataImag = new double[newSize];
-
+        double[] newdata = new double[newSize];
         int[] sub;
         int newInd;
-        for ( int i = 0; i < dataReal.length; i++ ) {
+        for ( int i = 0; i < data.length; i++ ) {
             sub = ind2sub( shape, i );
             newInd = sub2ind( dimensions, sub );
-            newDataReal[newInd] = dataReal[i];
-            if ( resizeImag )
-                newDataImag[newInd] = dataImag[i];
+            newdata[newInd] = data[i];
         }
-        dataReal = newDataReal;
-        dataImag = newDataImag;
+        data = newdata;
         shape = dimensions;
     }
 
     /* Moved this to its own function bc slice was getting a little long */
-    protected double[][] sliceData ( int[][] dims, int[] newShape, int size ) {
+    protected double[] sliceData ( int[][] dims, int[] newShape, int size ) {
         // get first subscript in the slice
         int[] sub = new int[shape.length];
         int ind = 0;
@@ -1292,20 +939,12 @@ public class Numeric extends NDArray {
                 subLast[ind++] = dim[1]-1;
         }
 
-        boolean sliceImag = dataImag != null;
-
         // start at first subscript, get all elements that fall in the slice
-        double[] newDataReal = new double[size];
-        double[] newDataImag = null;
-        if ( sliceImag ) newDataImag = new double[size];
+        double[] newdata = new double[size];
         int startInd = sub2indNoCheck( shape, sub );
         int endInd = sub2indNoCheck( shape, subLast );
-
         ind = 0;
-        newDataReal[ind] = dataReal[startInd];
-        if ( sliceImag ) newDataImag[ind] = dataImag[startInd];
-        ind++;
-
+        newdata[ind++] = data[startInd];
         for ( int i = startInd+1; i < endInd; i++ ) {
             sub = ind2subNoCheck( shape, i );
             boolean add = true;
@@ -1319,30 +958,18 @@ public class Numeric extends NDArray {
                     break;
                 }
             }
-            if ( add ) {
-                newDataReal[ind] = dataReal[i];
-                if ( sliceImag ) newDataImag[ind] = dataImag[i];
-                ind++;
-            }
+            if ( add )
+                newdata[ind++] = data[i];
         }
+        if ( startInd != endInd )
+            newdata[ind] = data[endInd];
 
-        if ( startInd != endInd ) {
-            newDataReal[ind] = dataReal[endInd];
-            if ( sliceImag ) newDataImag[ind] = dataImag[endInd];
-        }
-
-        return new double[][]{ newDataReal, newDataImag };
+        return newdata;
     }
 
     /* copy this objects data into dest */
     protected void copyData ( Numeric dest ) {
-        System.arraycopy(
-            dataReal, 0, dest.dataReal, 0, dataReal.length );
-        if ( dataImag != null ) {
-            dest.dataImag = new double[dest.dataReal.length];
-            System.arraycopy(
-                dataImag, 0, dest.dataImag, 0, dataImag.length );
-        }
+        System.arraycopy(data, 0, dest.data, 0, data.length );
     }
 
 }
