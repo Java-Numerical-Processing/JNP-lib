@@ -1,4 +1,4 @@
-# Java Numeric Processing [WIP]
+# Java Numerical Processing [WIP]
 
 Java Numeric Processing (JNP) is a numerical computing package for Java. JNP aims to provide efficient operations for dense matrices and tensors with support for complex valued data in the JVM while maintaining a robust object-oriented design. JNP is currently a work-in-progress and in active development.
 
