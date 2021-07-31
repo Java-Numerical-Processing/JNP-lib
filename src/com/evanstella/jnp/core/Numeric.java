@@ -27,6 +27,7 @@
 package com.evanstella.jnp.core;
 
 import com.evanstella.jnp.math.Element;
+import com.evanstella.jnp.math.ElementWiseExecutor;
 
 /******************************************************************************
  * An NDArray of numeric values. In order to save space and computation time,
