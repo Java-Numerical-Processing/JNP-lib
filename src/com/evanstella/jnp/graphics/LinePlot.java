@@ -43,19 +43,21 @@ public class LinePlot extends JComponent {
     private Numeric XData;
     private Numeric YData;
 
-    private double scaleFactor;
+    private double zoom;
     private double scale;
     private int originX;
     private int originY;
+    private int dragAnchorX;
+    private int dragAnchorY;
 
-    public LinePlot ( Numeric XData, Numeric YData, int h, int w ) {
+    public LinePlot ( Numeric XData, Numeric YData, int w, int h ) {
         super();
         this.XData = XData;
         this.YData = YData;
-        originX = h/2;
-        originY = w/2;
+        originX = 0;
+        originY = 0;
         scale = 10;
-        scaleFactor = 1.1;
+        zoom = 1;
 
         MouseHandler mouseHandler = new MouseHandler( this );
     }
@@ -67,34 +69,56 @@ public class LinePlot extends JComponent {
 
     public void update ( Graphics g ) {
         //w is x, and h is y (as in x/y values in a graph)
-        int w = originX;
-        int h = originY;
+        int w = 400;
+        int h = 300;
 
-        Graphics2D g1 = (Graphics2D) g;
-        g1.setRenderingHint(
+        Graphics2D canvas = (Graphics2D) g;
+        setTranslation( canvas );
+        setZoom( canvas );
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
-        g1.setStroke(new BasicStroke(2));
-        g1.setColor(Color.black);
-        g1.drawLine(0,h,getWidth(),h);
-        g1.drawLine(w,0,w,getHeight());
-        g1.drawString("(0,0)", w + 2, h + 15);
+        g2d.setStroke(new BasicStroke((float)2));
+        g2d.setColor(Color.blue);
 
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setStroke(new BasicStroke((float)2));
-        g2.setColor(Color.blue);
+        int maxX = 0, maxY = 0, minX = 0, minY = 0;
 
         Polygon p = new Polygon();
         double[] XPoints = XData.getData();
         double[] YPoints = YData.getData();
 
-        for ( int x = 0; x < XPoints.length; x++ ) {
-            p.addPoint( (int) (w+scale * XPoints[x]), (int) (h - scale * YPoints[x]) );
+        for ( int px, py, x = 0; x < XPoints.length; x++ ) {
+            px = (int) (w+scale * XPoints[x]);
+            if ( px > maxX ) maxX = px;
+            if ( px < minX ) minX = px;
+
+            py = (int) (h-scale * YPoints[x]);
+            if ( py > maxY ) maxY = py;
+            if ( py < minY ) minY = py;
+
+            p.addPoint( px, py );
         }
-        g2.drawPolyline( p.xpoints, p.ypoints, p.npoints );
+
+        g2d.drawPolyline( p.xpoints, p.ypoints, p.npoints );
+
+        g2d.setStroke(new BasicStroke(2));
+        g2d.setColor(Color.black);
+        g2d.drawLine(minX-50,h,maxX+50,h);
+        g2d.drawLine(w,minY-50,w,maxY+50);
+        g2d.drawString("(0,0)", w + 2, h + 15);
+
+    }
+
+    private void setTranslation ( Graphics2D canvas ) {
+        canvas.translate(originX,originY);
+    }
+
+    private void setZoom ( Graphics2D canvas ) {
+        //canvas.translate(originX,originY);
+        canvas.scale(zoom,zoom);
+        canvas.translate(-originX,-originY);
     }
 
     public void setXData ( Numeric XData ) {
@@ -126,29 +150,44 @@ public class LinePlot extends JComponent {
 
     private class MouseHandler implements MouseMotionListener, MouseWheelListener {
 
+
         public MouseHandler ( JComponent plot ) {
+            dragAnchorX = originX;
+            dragAnchorY = originY;
+
             plot.addMouseMotionListener(this);
             plot.addMouseWheelListener(this);
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) {
-            originX = e.getX();
-            originY = e.getY();
+        public void mouseDragged ( MouseEvent e ) {
+            int deltaX = dragAnchorX - e.getX();
+            int deltaY = dragAnchorY - e.getY();
+
+            originX -= deltaX * Math.abs(zoom);
+            originY -= deltaY * Math.abs(zoom);
+
             repaint();
+
+            dragAnchorX = e.getX();
+            dragAnchorY = e.getY();
         }
 
         @Override
-        public void mouseMoved(MouseEvent e) {}
+        public void mouseMoved(MouseEvent e) {
+            dragAnchorX = e.getX();
+            dragAnchorY = e.getY();
+        }
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            int notches = e.getWheelRotation();
-            if ( notches < 0 ) scale /= scaleFactor;
-            else scale *= scaleFactor;
 
-            if (scale < 1) scale = 1;
-            if (scale > 10000) scale = 10000;
+            zoom += (.1 * e.getWheelRotation());
+            zoom = Math.max(0.1, zoom);
+            zoom = Math.min(zoom, 10);
+            originX = e.getX();
+            originY = e.getY();
+
             repaint();
         }
     }

@@ -28,17 +28,19 @@ package com.evanstella.jnp.math;
 
 import com.evanstella.jnp.core.*;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /******************************************************************************
  * Element encapsulates all of the element-wise operations that can be done on
  * NDArrays.
  *
  * @author Evan Stella
  *****************************************************************************/
-public final class Element {
+public final class Element{
 
     // no instances for you
-    private Element () {}
-
+    private Element ( int threadCount ) {}
 
     /**************************************************************************
      * <p>Take the negative of A element wise
