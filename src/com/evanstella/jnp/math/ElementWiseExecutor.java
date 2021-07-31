@@ -39,42 +39,11 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Evan Stella
  *****************************************************************************/
-public final class ElementWiseExecutor {
+public final class ElementWiseExecutor extends ParallelExecutor {
 
-    public int threadCount;
-    private final ExecutorService executorService;
-
-    // no instances for you
-    public ElementWiseExecutor(int threadCount ) {
-        this.threadCount = threadCount;
-        executorService = Executors.newFixedThreadPool(threadCount);
+    public ElementWiseExecutor( int threadCount ) {
+        super( threadCount );
     }
-
-    public void shutdown ( ) {
-        executorService.shutdown();
-    }
-
-    //TODO
-    private static class executionWorker implements Runnable {
-        final int startIdx, endIdx;
-        public executionWorker ( int start, int end ) {
-            startIdx = start;
-            endIdx = end;
-        }
-        public void run ( ) {}
-    }
-
-
-    private void await ( CountDownLatch count ) {
-        try {
-            count.await();
-        } catch ( InterruptedException e ) {
-            throw new ExecutionInterruptedException(
-                "Parallel execution was interrupted"
-            );
-        }
-    }
-
 
     /**************************************************************************
      * <p>Take the negative of A element wise
