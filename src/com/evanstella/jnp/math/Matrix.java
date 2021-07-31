@@ -40,7 +40,7 @@ public final class Matrix {
     // no instances for you
     private Matrix ( ) {}
 
-    private static void validateMatrixFatal ( Numeric N ) {
+    public static void validateMatrixFatal ( Numeric N ) {
         if ( N.shape().length == 2 )
             return;
 
