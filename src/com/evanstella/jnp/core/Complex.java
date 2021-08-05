@@ -27,15 +27,12 @@
 package com.evanstella.jnp.core;
 
 import com.evanstella.jnp.math.Element;
-import com.evanstella.jnp.math.ElementWiseExecutor;
 
 /******************************************************************************
- * An NDArray of Complex values. In order to save space and computation time,
- * as long as there is no complex data stored in the Complex, the dataImag
- * field will be null and Complex will only store a double for each real value.
- * Once complex data is added, the dataImag field is initialized with the same
- * size of the dataReal, meaning complex Complexs are twice as large in memory
- * as real Complexs of the same number of elements. TODO
+ * An NDArray of Complex values. Complex numbers are stored as two doubles,
+ * one storing the real component and the other the imaginary component. This
+ * means a Complex NDArray is twice as large in memory as a regular Numeric
+ * NDArray holding the same number of values.
  *
  * @author Evan Stella
  *****************************************************************************/
@@ -62,14 +59,13 @@ public class Complex extends NDArray {
                 "Dimension lengths must be positive and non-zero."
             );
         dataReal = new double[size];
-        dataImag = null;
+        dataImag = new double[size];
     }
 
     /**************************************************************************
-     * <p>Class constructor. Initializes a Complex with parameterized dimensions.
-     * The dimensions are deep copied to limit their write access to the object.
+     * <p>Class constructor. Initializes a Complex from a Numeric.
      *
-     * TODO.
+     * @param N The Numeric to initialize from.
      *************************************************************************/
     public Complex ( Numeric N ) {
         shape = new int[N.shape.length];
@@ -170,19 +166,6 @@ public class Complex extends NDArray {
     }
 
     /**************************************************************************
-     * <p>Initializes a Logical with all true values.
-     *
-     * @param dimensions The dimensions for the N-D Logical.
-     *
-     * @return a reference the initialized Logical
-     *************************************************************************/
-    public static Complex Ones ( int ...dimensions ) {
-        Complex N = new Complex( dimensions );
-        java.util.Arrays.fill(N.dataReal, 1.0);
-        return N;
-    }
-
-    /**************************************************************************
      * <p>Initializes a Complex with all zeros. Literally the same as
      * calling the constructor but here for completeness' sake.
      *
@@ -217,6 +200,7 @@ public class Complex extends NDArray {
         return new Complex( new double[]{real}, new double[]{imag} );
     }
 
+
     /**************************************************************************
      * <p>Initializes a Complex with random real values using java.util.Random.
      *
@@ -225,23 +209,6 @@ public class Complex extends NDArray {
      * @return a reference the initialized Complex
      *************************************************************************/
     public static Complex Rand ( int ...dimensions ) {
-        java.util.Random R = new java.util.Random( );
-        Complex C = new Complex( dimensions );
-
-        for ( int i = 0; i < C.dataReal.length; i++ )
-            C.dataReal[i] = R.nextDouble();
-
-        return C;
-    }
-
-    /**************************************************************************
-     * <p>Initializes a Complex with random real values using java.util.Random.
-     *
-     * @param dimensions the dimensions for the N-D Complex.
-     *
-     * @return a reference the initialized Complex
-     *************************************************************************/
-    public static Complex RandComplex ( int ...dimensions ) {
         java.util.Random R = new java.util.Random( );
         Complex C = new Complex( dimensions );
         C.dataImag = new double[C.dataReal.length];
@@ -264,25 +231,6 @@ public class Complex extends NDArray {
      * @return a reference the initialized Complex
      *************************************************************************/
     public static Complex Rand ( long seed,  int ...dimensions ) {
-        java.util.Random R = new java.util.Random( seed );
-        Complex N = new Complex( dimensions );
-
-        for ( int i = 0; i < N.dataReal.length; i++ )
-            N.dataReal[i] = R.nextDouble();
-
-        return N;
-    }
-
-    /**************************************************************************
-     * <p>Initializes a Complex with random real values with a seed using
-     * java.util.Random.
-     *
-     * @param seed       the PRNG seed.
-     * @param dimensions the dimensions for the N-D Complex.
-     *
-     * @return a reference the initialized Complex
-     *************************************************************************/
-    public static Complex RandComplex ( long seed,  int ...dimensions ) {
         java.util.Random R = new java.util.Random( seed );
         Complex N = new Complex( dimensions );
         N.dataImag = new double[N.dataReal.length];
@@ -346,23 +294,6 @@ public class Complex extends NDArray {
     }
 
     /**************************************************************************
-     * <p>Initializes an identity matrix with the inputted number of rows and
-     * columns
-     *
-     * @param r   The number of rows for the matrix
-     * @param c   The number of columns for the matrix
-     *
-     * @return a reference to the initialized matrix
-     *************************************************************************/
-    public static Complex Eye ( int r, int c ) {
-        Complex eye = new Complex( r, c );
-        for ( int i = 0; i < r && i < c; i++ ) {
-            eye.dataReal[i * c + i] = 1;
-        }
-        return eye;
-    }
-
-    /**************************************************************************
      * <p>Initializes a square matrix with the diagonal equal to the inputted
      * vector. All off-diagonal values are initialized to zero.
      *
@@ -373,23 +304,19 @@ public class Complex extends NDArray {
     public static Complex Diagonal ( Complex N ) {
         if ( N.shape.length > 2 )
             throw new IllegalDimensionException(
-                    "Input must be a row or column vector (shape = N or 1xN or Nx1)."
+                "Input must be a row or column vector (shape = N or 1xN or Nx1)."
             );
         if ( N.shape.length != 1 && N.shape[0] != 1 && N.shape[1] != 1 )
             throw new IllegalDimensionException(
-                    "Input must be a row or column vector (shape = N or 1xN or Nx1)."
+                "Input must be a row or column vector (shape = N or 1xN or Nx1)."
             );
 
         int size = N.dataReal.length;
-        boolean isComplex = N.dataImag != null;
         Complex result = new Complex( size, size );
-        if ( isComplex )
-            result.dataImag = new double[result.dataReal.length];
         for ( int ind, i = 0; i < size; i++ ) {
             ind = i * size + i;
             result.dataReal[ind] = N.dataReal[i];
-            if ( isComplex )
-                result.dataImag[ind] = N.dataImag[i];
+            result.dataImag[ind] = N.dataImag[i];
         }
         return result;
     }
@@ -417,12 +344,12 @@ public class Complex extends NDArray {
     /**************************************************************************
      * <p>If this Complex is a scalar, return the scalar real value
      *
-     * @return true if this Complex is scalar
+     * @return the real value of the complex scalar
      *************************************************************************/
     public double valueReal ( ) {
         if ( !isScalar() )
             throw new IllegalDimensionException(
-                    "Error using value(): Complex must be scalar."
+                "Error using value(): Complex must be scalar."
             );
         return dataReal[0];
     }
@@ -430,14 +357,14 @@ public class Complex extends NDArray {
     /**************************************************************************
      * <p>If this Complex is a scalar, return the scalar imaginary value
      *
-     * @return true if this Complex is scalar
+     * @return the imaginary value of the complex scalar
      *************************************************************************/
     public double valueImag ( ) {
         if ( !isScalar() )
             throw new IllegalDimensionException(
-                    "Error using value(): Complex must be scalar."
+                "Error using value(): Complex must be scalar."
             );
-        return ( dataImag == null ) ? 0.0 : dataImag[0];
+        return dataImag[0];
     }
 
     /**************************************************************************
@@ -462,38 +389,6 @@ public class Complex extends NDArray {
     }
 
     /**************************************************************************
-     * <p>Initialize the imaginary component of the Complex to zero. If the data
-     * is not currently complex, this will double it's size in memory. This
-     * must be done before doing complex Complex operations if the data is
-     * not currently complex.
-     *
-     * @return a reference to the initialized complex data.
-     *************************************************************************/
-    public double[] initializeDataImag ( ) {
-        dataImag = new double[dataReal.length];
-        return dataImag;
-    }
-
-    /**************************************************************************
-     * <p>Sets the value of the data at the subscript with the inputted value
-     * WITHOUT resizing if the subscript is out of bounds of the data
-     * dimensions. If this is the case, an IllegalDimensionException will be
-     * thrown.
-     *
-     * @param inDataReal    the data to set (real component)
-     * @param sub           the subscript at which to set the data
-     *************************************************************************/
-    public void set ( double inDataReal, int[] sub ) {
-        int ind = sub2ind( shape, sub );
-        if ( ind >= dataReal.length ) {
-            throw new IllegalDimensionException(
-                    "Subscript out of bounds for dimensions"
-            );
-        }
-        dataReal[ind] = inDataReal;
-    }
-
-    /**************************************************************************
      * <p>Sets the value of the data at the subscript with the inputted value
      * WITHOUT resizing if the subscript is out of bounds of the data
      * dimensions. If this is the case, an IllegalDimensionException will be
@@ -507,25 +402,11 @@ public class Complex extends NDArray {
         int ind = sub2ind( shape, sub );
         if ( ind >= dataReal.length ) {
             throw new IllegalDimensionException(
-                    "Subscript out of bounds for dimensions"
+                "Subscript out of bounds for dimensions"
             );
         }
         dataReal[ind] = inDataReal;
-        if ( dataImag == null )
-            dataImag = new double[dataReal.length];
         dataImag[ind] = inDataImag;
-    }
-
-    /**************************************************************************
-     * <p>Sets the value of the data at the subscript with the inputted value
-     * WITHOUT resizing if the subscript is out of bounds of the data
-     * dimensions.
-     *
-     * @param inDataReal    the data to set (real component)
-     * @param ind           the index at which to set the data
-     *************************************************************************/
-    public void set ( double inDataReal, int ind ) {
-        dataReal[ind] = inDataReal;
     }
 
     /**************************************************************************
@@ -539,34 +420,7 @@ public class Complex extends NDArray {
      *************************************************************************/
     public void set ( double inDataReal, double inDataImag, int ind ) {
         dataReal[ind] = inDataReal;
-        if ( dataImag == null )
-            dataImag = new double[dataReal.length];
         dataImag[ind] = inDataImag;
-    }
-
-    /**************************************************************************
-     * <p>Sets the value of the data at the subscript with the inputted value. If
-     * the subscript is out of bounds of the data dimensions, the data will be
-     * resized. This can be slower on larger data sets as this
-     * this operation is O(n) for data of size n.
-     *
-     * @param inDataReal    the data to set (real component)
-     * @param sub           the subscript at which to set the data
-     *************************************************************************/
-    public void setAt ( double inDataReal, int[] sub ) {
-        int ind = sub2ind( sub );
-        if ( ind >= dataReal.length ) {
-            int[] newDims = new int[shape.length];
-            for ( int i = 0; i < shape.length; i++ ) {
-                if ( shape[i] > sub[i] )
-                    newDims[i] = shape[i];
-                else
-                    newDims[i] = sub[i] + 1;
-            }
-            resizeNoCheck( newDims );
-            ind = sub2ind( sub );
-        }
-        dataReal[ind] = inDataReal;
     }
 
     /**************************************************************************
@@ -593,35 +447,7 @@ public class Complex extends NDArray {
             ind = sub2ind( sub );
         }
         dataReal[ind] = inDataReal;
-        if ( dataImag == null )
-            dataImag = new double[dataReal.length];
         dataImag[ind] = inDataImag;
-    }
-
-    /**************************************************************************
-     * <p>Indexes the Complex using the inputted Logical as a mask and sets the
-     * indexed values to val.
-     *
-     * @param val       The real value to set the indexed elements to
-     * @param Inds      Logical to be used as an index into the data
-     *************************************************************************/
-    public void set ( double val, Logical Inds ) {
-        if ( Inds.shape.length != shape.length)
-            throw new IllegalDimensionException(
-                    "Index dimensions must be equal to data dimensions."
-            );
-        for ( int i = 0; i < shape.length; i++ ) {
-            if ( Inds.shape[i] != shape[i] )
-                throw new IllegalDimensionException(
-                        "Index dimensions must be equal to data dimensions."
-                );
-        }
-
-        for ( int i = 0; i < dataReal.length; i++ ) {
-            if ( Inds.data[i] ) {
-                dataReal[i] = val;
-            }
-        }
     }
 
     /**************************************************************************
@@ -636,17 +462,13 @@ public class Complex extends NDArray {
     public void set ( double valReal, double valImag, Logical Inds ) {
         if ( !NDArray.dimensionsMatch( this, Inds ) )
             throw new IllegalDimensionException(
-                    "Index dimensions must be equal to data dimensions."
+                "Index dimensions must be equal to data dimensions."
             );
-
-        boolean isComplex = ( valImag != 0 );
-        if ( isComplex && dataImag == null )
-            dataImag = new double[dataReal.length];
 
         for ( int i = 0; i < dataReal.length; i++ ) {
             if ( Inds.data[i] ) {
                 dataReal[i] = valReal;
-                if ( isComplex ) dataImag[i] = valImag;
+                dataImag[i] = valImag;
             }
         }
     }
@@ -666,14 +488,10 @@ public class Complex extends NDArray {
                     "Index dimensions must be equal to data dimensions."
             );
 
-        boolean isComplex = ( valImag != 0 );
-        if ( isComplex && dataImag == null )
-            dataImag = new double[dataReal.length];
-
         for ( int i = 0; i < dataReal.length; i++ ) {
             if ( Inds.data[i] ) {
                 dataReal[i] += valReal;
-                if ( isComplex ) dataImag[i] += valImag;
+                dataImag[i] += valImag;
             }
         }
     }
@@ -693,24 +511,15 @@ public class Complex extends NDArray {
                     "Index dimensions must be equal to data dimensions."
             );
 
-        boolean isComplex = ( valImag != 0 );
-        if ( isComplex && dataImag == null )
-            dataImag = new double[dataReal.length];
-
         double x,y,u,v;
         for ( int i = 0; i < dataReal.length; i++ ) {
             if ( Inds.data[i] ) {
-                if ( isComplex ) {
-                    x = dataReal[i];
-                    y = dataImag[i];
-                    u = valReal;
-                    v = valImag;
-                    dataReal[i] = x*u - y*v;
-                    dataImag[i] = x*v + y*u;
-                }
-                else {
-                    dataReal[i] = dataReal[i] * valReal;
-                }
+                x = dataReal[i];
+                y = dataImag[i];
+                u = valReal;
+                v = valImag;
+                dataReal[i] = x*u - y*v;
+                dataImag[i] = x*v + y*u;
             }
         }
     }
@@ -727,7 +536,7 @@ public class Complex extends NDArray {
 
         if ( !NDArray.dimensionsMatch( this, Inds ) )
             throw new IllegalDimensionException(
-                    "Index dimensions must be equal to data dimensions."
+                "Index dimensions must be equal to data dimensions."
             );
         // get number of elements
         int numElements = 0;
@@ -735,13 +544,10 @@ public class Complex extends NDArray {
             if ( Inds.data[i] ) numElements++;
 
         Complex result = new Complex( 1, numElements );
-        boolean isComplex = dataImag != null;
-        if ( isComplex )
-            result.dataImag = new double[result.dataReal.length];
         for ( int ind = 0, i = 0; i < dataReal.length; i++ ) {
             if ( Inds.data[i] ) {
                 result.dataReal[ind] = dataReal[i];
-                if ( isComplex ) result.dataImag[ind] = dataImag[i];
+                result.dataImag[ind] = dataImag[i];
                 ind++;
             }
         }
@@ -759,13 +565,11 @@ public class Complex extends NDArray {
         int ind = sub2ind( shape, sub );
         if ( ind >= dataReal.length )
             throw new IllegalDimensionException(
-                    "Subscript out of range of data dimensions");
+                "Subscript out of range of data dimensions");
 
         Complex ret = new Complex( 1,1 );
         ret.dataReal[0] = dataReal[ind];
-        if ( dataImag != null ) {
-            ret.dataImag = new double[]{ dataImag[ind] };
-        }
+        ret.dataImag[0] = dataImag[ind] ;
         return ret;
     }
 
@@ -784,9 +588,7 @@ public class Complex extends NDArray {
 
         Complex ret = new Complex( 1,1 );
         ret.dataReal[0] = dataReal[ind];
-        if ( dataImag != null ) {
-            ret.dataImag = new double[]{ dataImag[ind] };
-        }
+        ret.dataImag[0] = dataImag[ind];
         return ret;
     }
 
@@ -887,7 +689,7 @@ public class Complex extends NDArray {
             size *= n;
         if ( size != dataReal.length )
             throw new IllegalDimensionException(
-                    "Invalid Dimensions. Number of elements must be the same"
+                "Invalid Dimensions. Number of elements must be the same"
             );
         Complex reshaped = new Complex( dimensions );
         copyData( reshaped );
@@ -915,14 +717,10 @@ public class Complex extends NDArray {
         int r = transposed.shape[0];
         int c = transposed.shape[1];
         for ( int i = 0; i < r; i++ )
-            for (int j = 0; j < c; j++)
+            for (int j = 0; j < c; j++) {
                 transposed.dataReal[i*c+j] = dataReal[j*r+i];
-        if ( dataImag != null ) {
-            transposed.dataImag = new double[transposed.dataReal.length];
-            for ( int i = 0; i < r; i++ )
-                for (int j = 0; j < c; j++)
-                    transposed.dataImag[i*c+j] = dataImag[j*r+i];
-        }
+                transposed.dataImag[i*c+j] = dataImag[j*r+i];
+            }
 
         return transposed;
     }
@@ -1004,8 +802,7 @@ public class Complex extends NDArray {
 
         boolean resizeImag = dataImag != null;
         double[] newDataReal = new double[newSize];
-        double[] newDataImag = null;
-        if ( resizeImag ) newDataImag = new double[newSize];
+        double[] newDataImag = new double[newSize];
 
         int[] sub;
         int newInd;
@@ -1013,8 +810,7 @@ public class Complex extends NDArray {
             sub = ind2sub( shape, i );
             newInd = sub2ind( dimensions, sub );
             newDataReal[newInd] = dataReal[i];
-            if ( resizeImag )
-                newDataImag[newInd] = dataImag[i];
+            newDataImag[newInd] = dataImag[i];
         }
         dataReal = newDataReal;
         dataImag = newDataImag;
@@ -1040,7 +836,7 @@ public class Complex extends NDArray {
     public Complex slice ( int[] ...dimensions ) {
         if ( dimensions.length != shape.length )
             throw new IllegalDimensionException(
-                    "Number of slice dimensions must match number of data dimensions");
+                "Number of slice dimensions must match number of data dimensions");
         int[] newShape = new int[shape.length];
         int size = 1;
         for ( int i = 0; i < shape.length; i++ ) {
@@ -1050,19 +846,19 @@ public class Complex extends NDArray {
             else if ( dim.length == 2 ) {
                 if ( dim[1] > shape[i] )
                     throw new IllegalDimensionException(
-                            "Slice index " + dim[1] + " out of bounds of dimension " + i);
+                        "Slice index " + dim[1] + " out of bounds of dimension " + i);
                 if ( dim[0] >= dim[1] )
                     throw new IllegalDimensionException(
-                            "Slice index 1 must be greater than index 2 for dimension " + i);
+                        "Slice index 1 must be greater than index 2 for dimension " + i);
                 newShape[i] = dim[1] - dim[0];
                 size *= (dim[1] - dim[0]);
             }
             else
                 throw new IllegalDimensionException(
-                        "Slice indices must be a single index or two values");
+                    "Slice indices must be a single index or two values");
             if ( newShape[i] < 1 )
                 throw new IllegalDimensionException(
-                        "Slice indices must be positive");
+                    "Slice indices must be positive");
         }
 
         double[][] newData = sliceData( dimensions, newShape, size );
@@ -1086,14 +882,14 @@ public class Complex extends NDArray {
     public Complex concat ( int dimension, Complex N ) {
         if ( dimension >= shape.length )
             throw new IllegalDimensionException(
-                    "Logical does not have " + (dimension+1) + " dimensions.");
+                "Logical does not have " + (dimension+1) + " dimensions.");
         if ( shape.length != N.shape.length )
             throw new IllegalDimensionException(
-                    "Both objects must have the same number of dimensions.");
+                "Both objects must have the same number of dimensions.");
         for ( int i = 0; i < shape.length; i++ ) {
             if ( i != dimension && shape[i] != N.shape[i] )
                 throw new IllegalDimensionException(
-                        "All dimensions but the concat dimension must be equal in length.");
+                    "All dimensions but the concat dimension must be equal in length.");
         }
 
         Complex catted = this.copy( );
@@ -1101,8 +897,6 @@ public class Complex extends NDArray {
         newShape[dimension] = shape[dimension] + N.shape[dimension];
         catted.resizeNoCheck( newShape );
 
-        boolean catImag = dataImag != null;
-        if ( catImag ) catted.dataImag = new double[catted.dataReal.length];
         int[] sub;
         int ind;
         for ( int i = 0; i < N.dataReal.length; i++ ) {
@@ -1110,7 +904,7 @@ public class Complex extends NDArray {
             sub[dimension] += shape[dimension];
             ind = sub2indNoCheck( newShape, sub );
             catted.dataReal[ind] = N.dataReal[i];
-            if ( catImag ) catted.dataImag[ind] = N.dataImag[i];
+            catted.dataImag[ind] = N.dataImag[i];
         }
 
         return catted;
@@ -1196,16 +990,11 @@ public class Complex extends NDArray {
             return true;
         if ( !NDArray.dimensionsMatch( this, N ) )
             return false;
-        boolean isComplex = dataImag != null;
-        if ( isComplex && N.dataImag == null )
-            return false;
-        else if ( !isComplex && N.dataImag != null )
-            return false;
 
         for ( int i = 0; i < dataReal.length; i++ ) {
             if ( this.dataReal[i] != N.dataReal[i] )
                 return false;
-            if ( isComplex && this.dataImag[i] != N.dataImag[i] )
+            if ( this.dataImag[i] != N.dataImag[i] )
                 return false;
         }
 
@@ -1218,9 +1007,9 @@ public class Complex extends NDArray {
      *
      * @param N         the other Complex to compare to
      * @param tolerance the tolerance for the difference between two
-     *                  corresponding data in the two Complexs
+     *                  corresponding data in the two Complexes
      *
-     * @return true if the two Complexs are equal to the specified tolerance
+     * @return true if the two Complexes are equal to the specified tolerance
      *************************************************************************/
     public boolean equalsTolerance ( Complex N, double tolerance ) {
         if ( this == N )
@@ -1228,11 +1017,6 @@ public class Complex extends NDArray {
         if ( !NDArray.dimensionsMatch( this, N ) )
             return false;
 
-        boolean isComplex = dataImag != null;
-        if ( isComplex && N.dataImag == null )
-            return false;
-        else if ( !isComplex && N.dataImag != null )
-            return false;
 
         double diff;
         for ( int i = 0; i < dataReal.length; i++ ) {
@@ -1240,12 +1024,10 @@ public class Complex extends NDArray {
             diff = (diff <= 0.0) ? 0.0 - diff : diff; // get abs value
             if ( diff > tolerance )
                 return false;
-            if ( isComplex ) {
-                diff = Math.abs(this.dataImag[i] - N.dataImag[i]);
-                diff = (diff <= 0.0) ? 0.0 - diff : diff;
-                if (diff > tolerance)
-                    return false;
-            }
+            diff = Math.abs(this.dataImag[i] - N.dataImag[i]);
+            diff = (diff <= 0.0) ? 0.0 - diff : diff;
+            if (diff > tolerance)
+                return false;
         }
 
         return true;
@@ -1264,8 +1046,7 @@ public class Complex extends NDArray {
 
         boolean resizeImag = dataImag != null;
         double[] newDataReal = new double[newSize];
-        double[] newDataImag = null;
-        if ( resizeImag ) newDataImag = new double[newSize];
+        double[] newDataImag = new double[newSize];
 
         int[] sub;
         int newInd;
@@ -1273,8 +1054,7 @@ public class Complex extends NDArray {
             sub = ind2sub( shape, i );
             newInd = sub2ind( dimensions, sub );
             newDataReal[newInd] = dataReal[i];
-            if ( resizeImag )
-                newDataImag[newInd] = dataImag[i];
+            newDataImag[newInd] = dataImag[i];
         }
         dataReal = newDataReal;
         dataImag = newDataImag;
@@ -1299,18 +1079,15 @@ public class Complex extends NDArray {
                 subLast[ind++] = dim[1]-1;
         }
 
-        boolean sliceImag = dataImag != null;
-
         // start at first subscript, get all elements that fall in the slice
         double[] newDataReal = new double[size];
-        double[] newDataImag = null;
-        if ( sliceImag ) newDataImag = new double[size];
+        double[] newDataImag = new double[size];
         int startInd = sub2indNoCheck( shape, sub );
         int endInd = sub2indNoCheck( shape, subLast );
 
         ind = 0;
         newDataReal[ind] = dataReal[startInd];
-        if ( sliceImag ) newDataImag[ind] = dataImag[startInd];
+        newDataImag[ind] = dataImag[startInd];
         ind++;
 
         for ( int i = startInd+1; i < endInd; i++ ) {
@@ -1328,14 +1105,14 @@ public class Complex extends NDArray {
             }
             if ( add ) {
                 newDataReal[ind] = dataReal[i];
-                if ( sliceImag ) newDataImag[ind] = dataImag[i];
+                newDataImag[ind] = dataImag[i];
                 ind++;
             }
         }
 
         if ( startInd != endInd ) {
             newDataReal[ind] = dataReal[endInd];
-            if ( sliceImag ) newDataImag[ind] = dataImag[endInd];
+            newDataImag[ind] = dataImag[endInd];
         }
 
         return new double[][]{ newDataReal, newDataImag };
@@ -1343,13 +1120,8 @@ public class Complex extends NDArray {
 
     /* copy this objects data into dest */
     protected void copyData ( Complex dest ) {
-        System.arraycopy(
-                dataReal, 0, dest.dataReal, 0, dataReal.length );
-        if ( dataImag != null ) {
-            dest.dataImag = new double[dest.dataReal.length];
-            System.arraycopy(
-                    dataImag, 0, dest.dataImag, 0, dataImag.length );
-        }
+        System.arraycopy( dataReal, 0, dest.dataReal, 0, dataReal.length );
+        System.arraycopy( dataImag, 0, dest.dataImag, 0, dataImag.length );
     }
 
 }
