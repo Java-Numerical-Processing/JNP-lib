@@ -28,19 +28,18 @@ package com.evanstella.jnp.math;
 
 import com.evanstella.jnp.core.*;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /******************************************************************************
  * Element encapsulates all of the element-wise operations that can be done on
- * NDArrays.
+ * NDArrays. These operations are implemented as static methods and are not
+ * executed in a multithreaded environment. Use ElementWiseExecutor for
+ * multithreading.
  *
  * @author Evan Stella
  *****************************************************************************/
-public final class Element{
+public final class Element {
 
     // no instances for you
-    private Element ( int threadCount ) {}
+    private Element ( ) {}
 
     /**************************************************************************
      * <p>Take the negative of A element wise
@@ -166,10 +165,10 @@ public final class Element{
      * <p>Add A and B element-wise. If A or B is scalar, add the scalar to the
      * elements of the other.
      *
-     * @param A the first Complex
-     * @param B the second Complex
+     * @param A the first Numeric
+     * @param B the second Numeric
      *
-     * @return a Complex with elements A+B
+     * @return a Numeric with elements A+B
      *************************************************************************/
     public static Numeric add ( Numeric A, Numeric B ) {
         validateDimensionsFatal( A, B );
@@ -235,10 +234,10 @@ public final class Element{
      * <p>Subtract B from A element-wise. If A or B is scalar, subtract the
      * scalar from the elements of the other.
      *
-     * @param A the first Complex
-     * @param B the second Complex
+     * @param A the first Numeric
+     * @param B the second Numeric
      *
-     * @return a Complex with elements A-B
+     * @return a Numeric with elements A-B
      *************************************************************************/
     public static Numeric sub ( Numeric A, Numeric B ) {
         validateDimensionsFatal( A, B );
@@ -304,10 +303,10 @@ public final class Element{
      * <p>Multiply A and B element-wise. If A or B is scalar, multiply the
      * scalar with the elements of the other.
      *
-     * @param A the first Complex
-     * @param B the second Complex
+     * @param A the first Numeric
+     * @param B the second Numeric
      *
-     * @return a Complex with elements A*B
+     * @return a Numeric with elements A*B
      *************************************************************************/
     public static Numeric mul ( Numeric A, Numeric B ) {
         validateDimensionsFatal( A, B );
@@ -375,10 +374,10 @@ public final class Element{
      * <p>Divide A by B element-wise. If A or B is scalar, divide the
      * scalar by the elements of the other or vice-versa.
      *
-     * @param A the first Complex
-     * @param B the second Complex
+     * @param A the first Numeric
+     * @param B the second Numeric
      *
-     * @return a Complex with elements A/B
+     * @return a Numeric with elements A/B
      *************************************************************************/
     public static Numeric div ( Numeric A, Numeric B ) {
         validateDimensionsFatal( A, B );
@@ -457,22 +456,12 @@ public final class Element{
     }
 
     /**************************************************************************
-     * <p>Calculates W^Z for each element in W and Z. For each element, if the
-     * base is positive and real and the exponent is real, the function just
-     * computes W^N using builtin Math.pow to avoid extra computation.
-     * Otherwise the following is used:
-     *
-     * <p>For w = a+bi, z = c+di: w^z = e^(z*ln(r)+i*theta) for r = sqrt(a^2+b^2)
-     * and theta = atan2(b,a) ...
-     * <p>w^z = r^c * e^(-d*theta) *
-     *          [ cos(d*ln(r) + c*theta) + i*sin(d*ln(r) + c*theta) ]
-     *
-     * <p>Dimensions must agree according to element wise operation rules.
+     * <p>Calculates W^Z for each element in W and Z.
      *
      * @param W         power base
      * @param Z         power exponent
      *
-     * @return a Complex with elements W^Z
+     * @return a Numeric with elements W^Z
      *************************************************************************/
     public static Numeric pow ( Numeric W, Numeric Z ) {
         validateDimensionsFatal( W, Z );
@@ -524,13 +513,11 @@ public final class Element{
     }
 
     /**************************************************************************
-     * <p>Compute the natural log of A element-wise.
+     * <p>Compute the real natural log of A element-wise.
      *
-     * Note for complex z = a+bi, ln(z) = ln(mag(z)) + phase(z)*i
+     * @param A Numeric of radians
      *
-     * @param A Complex of radians
-     *
-     * @return a Complex with elements ln(A)
+     * @return a Numeric with elements ln(A)
      *************************************************************************/
     public static Numeric log ( Numeric A ) {
         Numeric result = A.copy();
@@ -565,9 +552,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the natural log of A element-wise.
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements ln(A)
+     * @return a Numeric with elements ln(A)
      *************************************************************************/
     public static Numeric sum ( Numeric A ) {
         double[] data = A.getData();
@@ -626,9 +613,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the sine of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements sin(A)
+     * @return a Numeric with elements sin(A)
      *************************************************************************/
     public static Numeric sin ( Numeric A ) {
         double[] data = A.getData();
@@ -646,35 +633,9 @@ public final class Element{
      * <p>Compute the sine of A element-wise. A is in degrees. Note that the
      * conversion from radians to degrees is not exact.
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements sin(A)
-     *************************************************************************/
-    public static Complex sind ( Complex A ) {
-        double[] realA = A.getDataReal();
-        double[] imagA = A.getDataImag();
-        double a,b, toRad = 0.017453292519943295;
-
-        Complex result = new Complex( A.shape() );
-        double[] resultReal = result.getDataReal();
-        double[] resultImag = result.getDataImag();
-
-        for ( int i = 0; i < resultReal.length; i++ ) {
-            a = realA[i] * toRad;
-            b = imagA[i] * toRad;
-            resultReal[i] = Math.sin(a) * Math.cosh(b);
-            resultImag[i] = Math.cos(a) * Math.sinh(b);
-        }
-        return result;
-    }
-
-    /**************************************************************************
-     * <p>Compute the sine of A element-wise. A is in degrees. Note that the
-     * conversion from radians to degrees is not exact.
-     *
-     * @param A Complex of radians
-     *
-     * @return a Complex with elements sin(A)
+     * @return a Numeric with elements sin(A)
      *************************************************************************/
     public static Numeric sind ( Numeric A ) {
         double[] realA = A.getData();
@@ -717,9 +678,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the cosine of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements cos(A)
+     * @return a Numeric with elements cos(A)
      *************************************************************************/
     public static Numeric cos ( Numeric A ) {
         double[] realA = A.getData();
@@ -736,35 +697,9 @@ public final class Element{
      * <p>Compute the cosine of A element-wise. A is in degrees. Note that the
      * conversion from radians to degrees is not exact
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements cos(A)
-     *************************************************************************/
-    public static Complex cosd ( Complex A ) {
-        double[] realA = A.getDataReal();
-        double[] imagA = A.getDataImag();
-        double a,b, toRad = 0.017453292519943295;
-
-        Complex result = new Complex( A.shape() );
-        double[] resultReal = result.getDataReal();
-        double[] resultImag = result.getDataImag();
-
-        for ( int i = 0; i < resultReal.length; i++ ) {
-            a = realA[i] * toRad;
-            b = imagA[i] * toRad;
-            resultReal[i] = Math.cos(a) * Math.cosh(b);
-            resultImag[i] = -1 * Math.sin(a) * Math.sinh(b);
-        }
-        return result;
-    }
-
-    /**************************************************************************
-     * <p>Compute the cosine of A element-wise. A is in degrees. Note that the
-     * conversion from radians to degrees is not exact
-     *
-     * @param A Complex of radians
-     *
-     * @return a Complex with elements cos(A)
+     * @return a Numeric with elements cos(A)
      *************************************************************************/
     public static Numeric cosd ( Numeric A ) {
         double[] realA = A.getData();
@@ -808,9 +743,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the tangent of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements tan(A)
+     * @return a Numeric with elements tan(A)
      *************************************************************************/
     public static Numeric tan ( Numeric A ) {
         double[] realA = A.getData();
@@ -828,36 +763,9 @@ public final class Element{
      * <p>Compute the tangent of A element-wise. A is in degrees, Not that the
      * conversion to radians is not exact.
      *
-     * @param A Complex of radians
+     * @param A Numeric of radians
      *
-     * @return a Complex with elements tan(A)
-     *************************************************************************/
-    public static Complex tand ( Complex A ) {
-        double[] realA = A.getDataReal();
-        double[] imagA = A.getDataImag();
-        double a,b,cos2acosh2b,toRad = 0.017453292519943295;
-
-        Complex result = new Complex( A.shape() );
-        double[] resultReal = result.getDataReal();
-        double[] resultImag = result.getDataImag();
-
-        for ( int i = 0; i < resultReal.length; i++ ) {
-            a = realA[i] * 2 * toRad;
-            b = imagA[i] * 2 * toRad;
-            cos2acosh2b = Math.cos(a) + Math.cosh(b);
-            resultReal[i] = Math.sin(a)  / cos2acosh2b;
-            resultImag[i] = Math.sinh(b) / cos2acosh2b;
-        }
-        return result;
-    }
-
-    /**************************************************************************
-     * <p>Compute the tangent of A element-wise. A is in degrees, Not that the
-     * conversion to radians is not exact.
-     *
-     * @param A Complex of radians
-     *
-     * @return a Complex with elements tan(A)
+     * @return a Numeric with elements tan(A)
      *************************************************************************/
     public static Numeric tand ( Numeric A ) {
         double[] realA = A.getData();
@@ -865,7 +773,6 @@ public final class Element{
 
         Numeric result = new Numeric( A.shape() );
         double[] resultReal = result.getData();
-        double[] resultImag = result.getData();
 
         for ( int i = 0; i < resultReal.length; i++ )
             resultReal[i] = Math.tan( realA[i] * toRad );
@@ -876,7 +783,7 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the hyperbolic cosine of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Complex
      *
      * @return a Complex with elements cosh(A)
      *************************************************************************/
@@ -901,9 +808,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the hyperbolic cosine of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Numeric
      *
-     * @return a Complex with elements cosh(A)
+     * @return a Numeric with elements cosh(A)
      *************************************************************************/
     public static Numeric cosh ( Numeric A ) {
         double[] realA = A.getData();
@@ -920,7 +827,7 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the hyperbolic sine of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Complex
      *
      * @return a Complex with elements sinh(A)
      *************************************************************************/
@@ -945,9 +852,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the hyperbolic sine of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Numeric
      *
-     * @return a Complex with elements sinh(A)
+     * @return a Numeric with elements sinh(A)
      *************************************************************************/
     public static Numeric sinh ( Numeric A ) {
         double[] realA = A.getData();
@@ -964,7 +871,7 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the hyperbolic tangent of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Complex
      *
      * @return a Complex with elements tanh(A)
      *************************************************************************/
@@ -990,9 +897,9 @@ public final class Element{
     /**************************************************************************
      * <p>Compute the hyperbolic tangent of A element-wise. A is in radians.
      *
-     * @param A Complex of radians
+     * @param A Numeric
      *
-     * @return a Complex with elements tanh(A)
+     * @return a Numeric with elements tanh(A)
      *************************************************************************/
     public static Numeric tanh ( Numeric A ) {
         double[] realA = A.getData();

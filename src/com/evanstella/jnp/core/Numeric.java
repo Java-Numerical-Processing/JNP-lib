@@ -27,15 +27,10 @@
 package com.evanstella.jnp.core;
 
 import com.evanstella.jnp.math.Element;
-import com.evanstella.jnp.math.ElementWiseExecutor;
 
 /******************************************************************************
- * An NDArray of numeric values. In order to save space and computation time,
- * as long as there is no complex data stored in the numeric, the dataImag
- * field will be null and Numeric will only store a double for each real value.
- * Once complex data is added, the dataImag field is initialized with the same
- * size of the data, meaning complex Numerics are twice as large in memory
- * as real Numerics of the same number of elements.
+ * An NDArray of numeric values. Data is stored internally as a 1 dimensional
+ * array of doubles.
  *
  * @author Evan Stella
  *****************************************************************************/
@@ -141,12 +136,12 @@ public class Numeric extends NDArray {
      *************************************************************************/
     public static Numeric Rand ( int ...dimensions ) {
         java.util.Random R = new java.util.Random( );
-        Numeric L = new Numeric( dimensions );
+        Numeric N = new Numeric( dimensions );
 
-        for ( int i = 0; i < L.data.length; i++ )
-            L.data[i] = R.nextDouble();
+        for ( int i = 0; i < N.data.length; i++ )
+            N.data[i] = R.nextDouble();
 
-        return L;
+        return N;
     }
 
     /**************************************************************************
@@ -422,7 +417,6 @@ public class Numeric extends NDArray {
                     "Index dimensions must be equal to data dimensions."
             );
 
-        double x,y,u,v;
         for ( int i = 0; i < data.length; i++ ) {
             if ( Inds.data[i] ) {
                 data[i] = data[i] * val;
