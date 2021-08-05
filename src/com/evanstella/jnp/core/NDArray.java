@@ -89,13 +89,19 @@ public abstract class NDArray {
      *************************************************************************/
     public abstract void resize ( int ...dimensions );
 
-    /*TODO*/
+    /**************************************************************************
+     * <p>Determine if NDArray is scalar (1x1)
+     *************************************************************************/
     public abstract boolean isScalar ( );
 
-    /*TODO*/
+    /**************************************************************************
+     * <p>Determine if NDArray is a vector (1xN), (Nx1)
+     *************************************************************************/
     public abstract boolean isVector ( );
 
-    /*TODO*/
+    /**************************************************************************
+     * <p>Returns the size of the NDArray in values.
+     *************************************************************************/
     public int getSize ( ) {
         int size = 1;
         for ( int n : shape )
