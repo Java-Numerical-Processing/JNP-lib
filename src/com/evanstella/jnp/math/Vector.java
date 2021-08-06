@@ -276,7 +276,7 @@ public final class Vector {
         kImag = (reA[0]*imB[1]+imA[0]*reB[1]) - (reA[1]*imB[0]+imA[1]*reB[0]);
 
 
-        return new Complex(
+        return new Complex (
             new double[]{ iReal, jReal, kReal },
             new double[]{ iImag, jImag, kImag }
         );
