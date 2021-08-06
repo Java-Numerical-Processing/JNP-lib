@@ -27,7 +27,7 @@
 package com.evanstella.jnp.core;
 
 /******************************************************************************
- * A runtime exception for arguments of JNP functions will incompatible or
+ * <p>A runtime exception for arguments of JNP functions will incompatible or
  * otherwise illegal dimensions than what the function is expecting.
  *
  * @author Evan Stella

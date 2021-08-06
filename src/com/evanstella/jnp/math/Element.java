@@ -29,7 +29,7 @@ package com.evanstella.jnp.math;
 import com.evanstella.jnp.core.*;
 
 /******************************************************************************
- * Element encapsulates all of the element-wise operations that can be done on
+ * <p>Element encapsulates all of the element-wise operations that can be done on
  * NDArrays. These operations are implemented as static methods and are not
  * executed in a multithreaded environment. Use ElementWiseExecutor for
  * multithreading.

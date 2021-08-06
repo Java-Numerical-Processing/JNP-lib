@@ -34,9 +34,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /******************************************************************************
- * ElementWiseExecutor a is a handler for multithreaded element-wise
+ * <p>ElementWiseExecutor a is a handler for multithreaded element-wise
  * operations. Once an instance of the class has been created, it can be used
- * to perform most of the same operations in Element in using multithreading.
+ * to perform most of the same operations in Element using multithreading.
  *
  * @author Evan Stella
  *****************************************************************************/

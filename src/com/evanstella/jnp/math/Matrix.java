@@ -31,8 +31,9 @@ import com.evanstella.jnp.core.NDArray;
 import com.evanstella.jnp.core.Numeric;
 
 /******************************************************************************
- * Matrix encapsulates all of the Matrix operations that can be done on
- * NDArrays. TODO
+ * <p>Matrix encapsulates all of the Matrix operations that can be done on
+ * NDArrays. These operations are implemented as static methods and are
+ * executed in series. For multithreaded operations use MatrixExecutor.
  *
  * @author Evan Stella
  *****************************************************************************/
@@ -41,6 +42,15 @@ public final class Matrix {
     // no instances for you
     private Matrix ( ) {}
 
+    /**************************************************************************
+     * <p>Matrix multiplication of m1 and m2. Number of columns of m1 must be
+     * equal to the number of rows of m2.
+     *
+     * @param m1    The first matrix
+     * @param m2    The second matrix
+     *
+     * @return a matrix m1*m2.
+     *************************************************************************/
     public static Numeric mul ( Numeric m1, Numeric m2 ) {
         Matrix.validateMatrixFatal( m1 );
         Matrix.validateMatrixFatal( m2 );
@@ -48,13 +58,13 @@ public final class Matrix {
 
         if ( m1.shape()[1] != m2.shape()[0] )
             throw new IllegalDimensionException(
-                    "Matrix multiplication: invalid dimensions."
+                "Matrix multiplication: invalid dimensions."
             );
 
         int r = m1.shape()[0], c = m2.shape()[1];
         double[] X = m1.getData();
         double[] Y = m2.getData();
-        Numeric result = new Numeric( r, c);
+        Numeric result = new Numeric( r, c );
         double[] Z = result.getData();
 
         for ( int ind, i = 0; i < r ;i++ ) {
@@ -70,7 +80,8 @@ public final class Matrix {
         return result;
     }
 
-    public static void validateMatrixFatal ( NDArray N ) {
+
+    /*package private*/ static void validateMatrixFatal ( NDArray N ) {
         if ( N.shape().length == 2 )
             return;
 
@@ -79,7 +90,7 @@ public final class Matrix {
         );
     }
 
-    private static void validateSquareMatrix( NDArray N ) {
+    /*package private*/ static void validateSquareMatrix( NDArray N ) {
         validateMatrixFatal( N );
         int[] shape = N.shape();
         if ( shape[0] == shape[1] )

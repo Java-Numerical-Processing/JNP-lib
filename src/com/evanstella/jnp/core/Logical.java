@@ -27,7 +27,7 @@
 package com.evanstella.jnp.core;
 
 /******************************************************************************
- * An NDArray storing boolean values
+ * <p>An NDArray storing boolean values
  *
  * @author Evan Stella
  *****************************************************************************/

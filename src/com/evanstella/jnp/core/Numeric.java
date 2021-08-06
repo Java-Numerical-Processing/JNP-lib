@@ -29,7 +29,7 @@ package com.evanstella.jnp.core;
 import com.evanstella.jnp.math.Element;
 
 /******************************************************************************
- * An NDArray of numeric values. Data is stored internally as a 1 dimensional
+ * <p>An NDArray of numeric values. Data is stored internally as a 1 dimensional
  * array of doubles.
  *
  * @author Evan Stella

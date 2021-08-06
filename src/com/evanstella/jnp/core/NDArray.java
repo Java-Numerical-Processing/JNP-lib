@@ -27,7 +27,7 @@
 package com.evanstella.jnp.core;
 
 /******************************************************************************
- * An abstract class encapsulating the logic and behavior of an N-dimensional
+ * <p>An abstract class encapsulating the logic and behavior of an N-dimensional
  * array. The reason this is done instead of using generics is primarily speed
  * and memory overhead: an array of primitive doubles is significantly more
  * performant than that of Java's class Double, and Java does not support

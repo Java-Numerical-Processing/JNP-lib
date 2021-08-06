@@ -29,7 +29,7 @@ package com.evanstella.jnp.core;
 import com.evanstella.jnp.math.Element;
 
 /******************************************************************************
- * An NDArray of Complex values. Complex numbers are stored as two doubles,
+ * <p>An NDArray of Complex values. Complex numbers are stored as two doubles,
  * one storing the real component and the other the imaginary component. This
  * means a Complex NDArray is twice as large in memory as a regular Numeric
  * NDArray holding the same number of values.
