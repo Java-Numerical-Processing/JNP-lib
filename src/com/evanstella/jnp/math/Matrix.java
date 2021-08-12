@@ -26,9 +26,12 @@
 
 package com.evanstella.jnp.math;
 
+import com.evanstella.jnp.core.Complex;
 import com.evanstella.jnp.core.IllegalDimensionException;
 import com.evanstella.jnp.core.NDArray;
 import com.evanstella.jnp.core.Numeric;
+
+import java.security.cert.CertificateParsingException;
 
 /******************************************************************************
  * <p>Matrix encapsulates all of the Matrix operations that can be done on
@@ -78,6 +81,50 @@ public final class Matrix {
         }
 
         return result;
+    }
+
+    /**************************************************************************
+     * <p>Compute the trace of the input matrix
+     *
+     * @param matrix    the matrix
+     *
+     * @return the trace of the matrix.
+     **************************************************************************/
+    public static Numeric trace ( Numeric matrix ) {
+        Matrix.validateSquareMatrix( matrix );
+        double[] data = matrix.getData();
+
+        double tr = 0;
+        int cols = matrix.shape()[0];
+        for ( int i = 0; i < cols; i++ ) {
+            tr += data[ i * cols + i ];
+        }
+
+        return Numeric.Scalar( tr );
+    }
+
+    /**************************************************************************
+     * <p>Compute the trace of the input matrix
+     *
+     * @param matrix    the matrix
+     *
+     * @return the trace of the matrix.
+     **************************************************************************/
+    public static Complex trace ( Complex matrix ) {
+        Matrix.validateSquareMatrix( matrix );
+        double[] dataR = matrix.getDataReal();
+        double[] dataI = matrix.getDataImag();
+
+        double trR = 0;
+        double trI = 0;
+        int cols = matrix.shape()[0];
+        for ( int ind, i = 0; i < cols; i++ ) {
+            ind = i*cols+i;
+            trR += dataR[ind];
+            trI += dataI[ind];
+        }
+
+        return Complex.Scalar( trR, trI );
     }
 
 

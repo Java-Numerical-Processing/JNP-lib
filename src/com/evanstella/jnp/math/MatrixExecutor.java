@@ -294,6 +294,27 @@ public final class MatrixExecutor extends ParallelExecutor {
         return result;
     }
 
+    /**************************************************************************
+     * <p>Compute the trace of the input matrix
+     *
+     * @param matrix    the matrix
+     *
+     * @return the trace of the matrix.
+     **************************************************************************/
+    public Numeric trace ( Numeric matrix ) {
+        return Matrix.trace( matrix );
+    }
+
+    /**************************************************************************
+     * <p>Compute the trace of the input matrix
+     *
+     * @param matrix    the matrix
+     *
+     * @return the trace of the matrix.
+     **************************************************************************/
+    public Complex trace ( Complex matrix ) {
+        return Matrix.trace( matrix );
+    }
 
 
 
