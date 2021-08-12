@@ -242,6 +242,58 @@ public final class MatrixExecutor extends ParallelExecutor {
         return result;
     }
 
+    /**************************************************************************
+     * <p>Matrix multiplication of m1 and m2. Number of columns of m1 must be
+     * equal to the number of rows of m2.
+     *
+     * @param m1    The first matrix
+     * @param m2    The second matrix
+     *
+     * @return a matrix m1*m2.
+     **************************************************************************/
+    public Complex mul ( Complex m1, Complex m2 ) {
+        Matrix.validateMatrixFatal( m1 );
+        Matrix.validateMatrixFatal( m2 );
+        if ( m1.shape()[1] != m2.shape()[0] )
+            throw new IllegalDimensionException(
+                    "Matrix multiplication: invalid dimensions."
+            );
+
+        final int c1 = m1.shape()[1], c2 = m2.shape()[1];
+        final int r = m1.shape()[0], c = m2.shape()[1];
+        double[] Xr = m1.getDataReal(); double[] Yr = m2.getDataReal();
+        double[] Xi = m1.getDataImag(); double[] Yi = m2.getDataImag();
+        Complex result = new Complex( r, c );
+        double[] Zr = result.getDataReal(); double[] Zi = result.getDataImag();
+
+        //create worker
+        CountDownLatch count = new CountDownLatch( threadCount );
+        class worker implements Runnable {
+            final int i,j;
+            public worker ( int i, int j ) { this.i = i; this.j = j; }
+            public void run ( ) {
+                try {
+                    int ind = i*c+j;
+                    Zr[ind] = 0; Zi[ind] = 0;
+                    for( int i1,i2,k = 0; k < c1; k++ ) {
+                        i1 = i * c1 + k;
+                        i2 = k * c2 + j;
+                        Zr[ind] += Xr[i1]*Yr[i2] - Xi[i1]*Yi[i2];
+                        Zi[ind] += Xr[i1]*Yi[i2] + Xi[i1]*Yr[i2];
+                    }
+                }
+                finally { count.countDown(); }
+            }
+        }
+
+        for ( int i = 0; i < r; i++ )
+            for( int j = 0; j < c; j++ )
+                executorService.execute( new worker(i, j) );
+
+        this.await( count );
+        return result;
+    }
+
 
 
 
