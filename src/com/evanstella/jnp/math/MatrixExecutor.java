@@ -29,6 +29,7 @@ package com.evanstella.jnp.math;
 import com.evanstella.jnp.core.Complex;
 import com.evanstella.jnp.core.IllegalDimensionException;
 import com.evanstella.jnp.core.Numeric;
+import com.evanstella.jnp.core.ParallelExecutor;
 
 import java.util.concurrent.CountDownLatch;
 

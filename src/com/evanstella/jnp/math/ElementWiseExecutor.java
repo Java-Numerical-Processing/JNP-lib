@@ -29,9 +29,6 @@ package com.evanstella.jnp.math;
 import com.evanstella.jnp.core.*;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /******************************************************************************
  * <p>ElementWiseExecutor a is a handler for multithreaded element-wise

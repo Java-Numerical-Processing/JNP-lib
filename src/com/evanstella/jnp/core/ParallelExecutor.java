@@ -24,7 +24,9 @@
  *
  */
 
-package com.evanstella.jnp.math;
+package com.evanstella.jnp.core;
+
+import com.evanstella.jnp.math.ExecutionInterruptedException;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -45,7 +47,7 @@ public abstract class ParallelExecutor {
      *
      * @param threadCount   The number of threads.
      *************************************************************************/
-    public ParallelExecutor( int threadCount ) {
+    public ParallelExecutor(int threadCount ) {
         this.threadCount = threadCount;
         executorService = Executors.newFixedThreadPool(threadCount);
     }
