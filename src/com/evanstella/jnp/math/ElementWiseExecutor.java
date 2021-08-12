@@ -48,7 +48,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
      * @param threadCount   The number of threads to create for the
      *                      handler.
      *************************************************************************/
-    public ElementWiseExecutor( int threadCount ) {
+    public ElementWiseExecutor ( int threadCount ) {
         super( threadCount );
     }
 
@@ -83,9 +83,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -128,9 +126,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -171,9 +167,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -210,9 +204,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -249,9 +241,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -288,9 +278,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -339,9 +327,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create add executionWorker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,c,d;
@@ -396,9 +382,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create add executionWorker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a = realA[0], b = realB[0];
@@ -447,9 +431,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,c,d;
@@ -504,9 +486,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -556,9 +536,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,c,d;
@@ -613,9 +591,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -665,9 +641,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,c,d,c2d2;
@@ -724,9 +698,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -785,9 +757,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,c,d,r,rc,theta,omega;
@@ -847,9 +817,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create add executionWorker
         CountDownLatch count = new CountDownLatch(threadCount);
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a = real1[0], b = real2[0];
@@ -893,9 +861,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,r;
@@ -935,9 +901,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -973,9 +937,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1014,9 +976,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1056,9 +1016,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1095,9 +1053,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double toRad = 0.017453292519943295;
@@ -1137,9 +1093,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1180,9 +1134,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1220,9 +1172,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double toRad = 0.017453292519943295;
@@ -1262,9 +1212,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,cos2acosh2b;
@@ -1305,9 +1253,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1344,9 +1290,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double toRad = 0.017453292519943295;
@@ -1386,9 +1330,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1428,9 +1370,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1469,9 +1409,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1511,9 +1449,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1552,9 +1488,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,cosh2acos2b;
@@ -1595,9 +1529,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1634,9 +1566,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1672,9 +1602,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1710,9 +1638,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -1756,9 +1682,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1806,9 +1730,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1856,9 +1778,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1906,9 +1826,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -1958,9 +1876,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b,c,d;
@@ -2016,9 +1932,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     double a,b;
@@ -2057,9 +1971,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     for (int i = startIdx; i < endIdx; i++) {
@@ -2101,9 +2013,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     boolean a,b;
@@ -2151,9 +2061,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         //create worker
         CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
-            public worker ( int start, int end ) {
-                super( start, end );
-            }
+            public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
                 try {
                     boolean a,b;
