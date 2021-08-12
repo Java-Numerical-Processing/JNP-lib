@@ -183,7 +183,7 @@ System.out.println( matrix );
 
 Graph f(x) = cos(x) + x*sin(x) for x = [-50,50].
 ```java
-NumericExpression1D f = x -> Math.cos(x) + x*Math.sin(x) );
+NumericExpression1D f = x -> Math.cos(x) + x*Math.sin(x);
 Numeric X = Numeric.LinSpace( -50, 50, 1000 );
 Numeric Y = E.evaluate( f, X );
 
