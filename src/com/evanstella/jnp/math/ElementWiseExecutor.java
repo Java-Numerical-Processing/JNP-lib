@@ -68,6 +68,95 @@ public final class ElementWiseExecutor extends ParallelExecutor {
     }
 
     /**************************************************************************
+     * <p>Evaluates the inputted numeric expression for each element in A.
+     *
+     * @param expr      The numeric expression to evaluate
+     * @param A         The Numeric to evaluate the expression for
+     *
+     * @return a Numeric with elements expr(A)
+     *************************************************************************/
+    public Numeric evaluate ( NumericExpression1D expr, Numeric A ) {
+        Numeric result = new Numeric( A.shape() );
+        double[] resultData = result.getData();
+        double[] data = A.getData();
+
+        //create worker
+        CountDownLatch count = new CountDownLatch(threadCount);
+        class worker extends executionWorker {
+            public worker ( int start, int end ) {
+                super( start, end );
+            }
+            public void run ( ) {
+                try {
+                    for (int i = startIdx; i < endIdx; i++) {
+                        resultData[i] = expr.evaluate( data[i] );
+                    }
+                }
+                catch ( RuntimeException ex ) {
+                    throw new ExecutionInterruptedException (
+                        "Error executing numeric expression:\n" + ex );
+                }
+                finally { count.countDown(); }
+            }
+        }
+
+        int start = 0, increment = resultData.length / threadCount;
+        for ( int i = 0; i < threadCount-1; i++ ) {
+            executorService.execute( new worker( start, start+increment ) );
+            start = start+increment;
+        }
+        executorService.execute( new worker( start, resultData.length ) );
+        this.await( count );
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Evaluates the inputted complex expression for each element in A.
+     *
+     * @param expr      The complex expression to evaluate
+     * @param A         The Complex to evaluate the expression for
+     *
+     * @return a Numeric with elements expr(A)
+     *************************************************************************/
+    public Complex evaluate ( ComplexExpression1D expr, Complex A ) {
+        Complex result = new Complex( A.shape() );
+        double[] resultDataR = result.getDataReal();
+        double[] resultDataI = result.getDataReal();
+        double[] dataR = A.getDataReal();
+        double[] dataI = A.getDataImag();
+
+        //create worker
+        CountDownLatch count = new CountDownLatch(threadCount);
+        class worker extends executionWorker {
+            public worker ( int start, int end ) {
+                super( start, end );
+            }
+            public void run ( ) {
+                try {
+                    for (int i = startIdx; i < endIdx; i++) {
+                        resultDataR[i] = expr.evaluateReal( dataR[i], dataI[i] );
+                        resultDataI[i] = expr.evaluateImag( dataR[i], dataI[i] );
+                    }
+                }
+                catch ( RuntimeException ex ) {
+                    throw new ExecutionInterruptedException (
+                            "Error executing numeric expression:\n" + ex );
+                }
+                finally { count.countDown(); }
+            }
+        }
+
+        int start = 0, increment = resultDataR.length / threadCount;
+        for ( int i = 0; i < threadCount-1; i++ ) {
+            executorService.execute( new worker( start, start+increment ) );
+            start = start+increment;
+        }
+        executorService.execute( new worker( start, resultDataR.length ) );
+        this.await( count );
+        return result;
+    }
+
+    /**************************************************************************
      * <p>Take the negative of A element wise
      *
      * @param A the Complex
