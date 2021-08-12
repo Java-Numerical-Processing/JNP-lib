@@ -27,7 +27,7 @@
 package com.evanstella.jnp.core;
 
 /******************************************************************************
- * <p>A functional interface for numerical functions of 1 variable
+ * <p>An interface for numerical functions of 1 variable
  * ( z = f(x,y) )
  *****************************************************************************/
 public interface ComplexExpression2D {

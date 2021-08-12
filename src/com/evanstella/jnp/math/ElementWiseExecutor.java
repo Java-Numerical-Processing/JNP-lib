@@ -81,7 +81,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         double[] data = A.getData();
 
         //create worker
-        CountDownLatch count = new CountDownLatch(threadCount);
+        CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
             public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
@@ -124,7 +124,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
         double[] dataI = A.getDataImag();
 
         //create worker
-        CountDownLatch count = new CountDownLatch(threadCount);
+        CountDownLatch count = new CountDownLatch( threadCount );
         class worker extends executionWorker {
             public worker ( int start, int end ) { super( start, end ); }
             public void run ( ) {
@@ -136,7 +136,7 @@ public final class ElementWiseExecutor extends ParallelExecutor {
                 }
                 catch ( RuntimeException ex ) {
                     throw new ExecutionInterruptedException (
-                            "Error executing numeric expression:\n" + ex );
+                        "Error executing numeric expression:\n" + ex );
                 }
                 finally { count.countDown(); }
             }
@@ -148,6 +148,110 @@ public final class ElementWiseExecutor extends ParallelExecutor {
             start = start+increment;
         }
         executorService.execute( new worker( start, resultDataR.length ) );
+        this.await( count );
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Add A and B element-wise. If A or B is scalar, add the scalar to the
+     * elements of the other.
+     *
+     * @param A the first Numeric
+     * @param B the second Numeric
+     *
+     * @return a Numeric with elements A+B
+     *************************************************************************/
+    public Numeric evaluate ( NumericExpression2D expr, Numeric A, Numeric B ) {
+        validateDimensionsFatal( A, B );
+        double[] realA = A.getData();
+        double[] realB = B.getData();
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+
+        int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
+        Numeric result = new Numeric( newShape );
+        double[] resultReal = result.getData();
+
+        //create add executionWorker
+        CountDownLatch count = new CountDownLatch( threadCount );
+        class worker extends executionWorker {
+            public worker ( int start, int end ) { super( start, end ); }
+            public void run ( ) {
+                try {
+                    double a = realA[0], b = realB[0];
+                    for (int i = startIdx; i < endIdx; i++) {
+                        if (!scalarA) a = realA[i];
+                        if (!scalarB) b = realB[i];
+                        resultReal[i] = expr.evaluate( a, b );
+                    }
+                }
+                finally { count.countDown(); }
+            }
+        }
+
+        int start = 0, increment = resultReal.length / threadCount;
+        for ( int i = 0; i < threadCount-1; i++ ) {
+            executorService.execute( new worker( start, start+increment ) );
+            start = start+increment;
+        }
+        executorService.execute( new worker(start, resultReal.length) );
+        this.await( count );
+        return result;
+    }
+
+    /**************************************************************************
+     * <p>Add A and B element-wise. If A or B is scalar, add the scalar to the
+     * elements of the other.
+     *
+     * @param A the first Complex
+     * @param B the second Complex
+     *
+     * @return a Complex with elements A+B
+     *************************************************************************/
+    public Complex evaluate ( ComplexExpression2D expr, Complex A, Complex B ) {
+        validateDimensionsFatal( A, B );
+        double[] realA = A.getDataReal();
+        double[] imagA = A.getDataImag();
+        double[] realB = B.getDataReal();
+        double[] imagB = B.getDataImag();
+        boolean scalarA = A.isScalar(), scalarB = B.isScalar();
+
+        int[] newShape = ( realA.length > realB.length ) ? A.shape() : B.shape();
+        Complex result = new Complex( newShape );
+        double[] resultReal = result.getDataReal();
+        double[] resultImag = result.getDataImag();
+
+        //create add executionWorker
+        CountDownLatch count = new CountDownLatch( threadCount );
+        class worker extends executionWorker {
+            public worker ( int start, int end ) { super( start, end ); }
+            public void run ( ) {
+                try {
+                    double a,b,c,d;
+                    a = realA[0]; c = realB[0];
+                    b = imagA[0]; d = imagB[0];
+                    for (int i = startIdx; i < endIdx; i++) {
+                        if ( !scalarA ) {
+                            a = realA[i];
+                            b = imagA[i];
+                        }
+                        if ( !scalarB ) {
+                            c = realB[i];
+                            d = imagB[i];
+                        }
+                        resultReal[i] = expr.evaluateReal( a, b, c, d );
+                        resultImag[i] = expr.evaluateImag( a, b, c, d );
+                    }
+                }
+                finally { count.countDown(); }
+            }
+        }
+
+        int start = 0, increment = resultReal.length / threadCount;
+        for ( int i = 0; i < threadCount-1; i++ ) {
+            executorService.execute( new worker( start, start+increment ) );
+            start = start+increment;
+        }
+        executorService.execute( new worker(start, resultReal.length) );
         this.await( count );
         return result;
     }

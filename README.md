@@ -166,9 +166,10 @@ System.out.println( matrix );
 [   0.1134 +0.4378i   0.4449 +0.7994i   0.7209 +0.9965i   0.7296 +0.0792i   0.2250 +0.2129i   ]
 ```
 
-Compute sinh(z) + cos(z).
+Compute sinh(z) + cos(z) in parallel using 8 threads.
 ```java
-matrix = Element.add( Element.sinh(matrix), Element.cos(matrix) );
+ElementWiseExectutor E = new ElementWiseExecutor( 8 );
+matrix = E.add( E.sinh(matrix), E.cos(matrix) );
 System.out.println( matrix );
 ```
 ```
@@ -182,8 +183,9 @@ System.out.println( matrix );
 
 Graph f(x) = cos(x) + x*sin(x) for x = [-50,50].
 ```java
+NumericExpression1D f = x -> Math.cos(x) + x*Math.sin(x) );
 Numeric X = Numeric.LinSpace( -50, 50, 1000 );
-Numeric Y = Element.add( Element.cos(X), Element.mul( X, Element.sin(X) ) );
+Numeric Y = E.evaluate( f, X );
 
 JFrame frame = new JFrame();
 frame.setSize(800, 600);
