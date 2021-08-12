@@ -27,29 +27,19 @@
 package com.evanstella.jnp.core;
 
 /******************************************************************************
- * <p>A functional interface for numerical functions of 1 variable ( y = f(z) )
+ * <p>A functional interface for numerical functions of 2 variables
+ * ( z = f(x,y) )
  *****************************************************************************/
-public interface ComplexExpression1D {
+public interface NumericExpression2D {
 
     /**************************************************************************
      * <p>This method needs to be implemented with the logic of the intended
-     * single variable function to return the real component of the result.
+     * single variable function.
      *
-     * @param re    the real component of the input
-     * @param im    the imaginary component of the input
-     *
-     * @return the real component of the result of the function
-     **************************************************************************/
-    double evaluateReal ( double re, double im );
+     * @param x    the first function input
+     * @param y    the second function input
 
-    /**************************************************************************
-     * <p>This method needs to be implemented with the logic of the intended
-     * single variable function to return the imaginary component of the result.
-     *
-     * @param re    the real component of the input
-     * @param im    the imaginary component of the input
-     *
-     * @return the imaginary component of the result of the function
+     * @return the result of the function
      **************************************************************************/
-    double evaluateImag ( double re, double im );
+    double evaluate ( double x, double y );
 }

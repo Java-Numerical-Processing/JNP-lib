@@ -27,29 +27,34 @@
 package com.evanstella.jnp.core;
 
 /******************************************************************************
- * <p>A functional interface for numerical functions of 1 variable ( y = f(z) )
+ * <p>A functional interface for numerical functions of 1 variable
+ * ( z = f(x,y) )
  *****************************************************************************/
-public interface ComplexExpression1D {
+public interface ComplexExpression2D {
 
     /**************************************************************************
      * <p>This method needs to be implemented with the logic of the intended
      * single variable function to return the real component of the result.
      *
-     * @param re    the real component of the input
-     * @param im    the imaginary component of the input
+     * @param reX    the real component of the first input
+     * @param imX    the imaginary component of the first input
+     * @param reY    the real component of the second input
+     * @param imY    the imaginary component of the second input
      *
      * @return the real component of the result of the function
      **************************************************************************/
-    double evaluateReal ( double re, double im );
+    double evaluateReal ( double reX, double imX, double reY, double imY );
 
     /**************************************************************************
      * <p>This method needs to be implemented with the logic of the intended
      * single variable function to return the imaginary component of the result.
      *
-     * @param re    the real component of the input
-     * @param im    the imaginary component of the input
+     * @param reX    the real component of the first input
+     * @param imX    the imaginary component of the first input
+     * @param reY    the real component of the second input
+     * @param imY    the imaginary component of the second input
      *
      * @return the imaginary component of the result of the function
      **************************************************************************/
-    double evaluateImag ( double re, double im );
+    double evaluateImag ( double reX, double imX, double reY, double imY );
 }
