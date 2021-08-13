@@ -33,23 +33,39 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /******************************************************************************
- * <p>An abstract class for a parallel process handler.
+ * <p>ParallelExecutor is a parallel process handler. Other executors can be
+ * can be created from an instance of this class so that they use the same
+ * executorService.
  *
  * @author Evan Stella
  *****************************************************************************/
-public abstract class ParallelExecutor {
+public class ParallelExecutor {
 
-    protected final int threadCount;
-    protected final ExecutorService executorService;
+    protected int threadCount;
+    protected ExecutorService executorService;
+
+    protected ParallelExecutor ( ) { };
 
     /**************************************************************************
      * <p>Constructor. Start a thread pool with the inputted thread count.
      *
      * @param threadCount   The number of threads.
      *************************************************************************/
-    public ParallelExecutor(int threadCount ) {
+    public ParallelExecutor ( int threadCount ) {
         this.threadCount = threadCount;
         executorService = Executors.newFixedThreadPool(threadCount);
+    }
+
+    /**************************************************************************
+     * <p>Bind another Executor to this object so they use the same executor
+     * service.
+     *
+     * @param E     The other executor to bind to; must inherit from this
+     *              class
+     *************************************************************************/
+    public <Executor extends ParallelExecutor> void bind ( Executor E ) {
+        E.executorService = executorService;
+        E.threadCount = threadCount;
     }
 
     /**************************************************************************

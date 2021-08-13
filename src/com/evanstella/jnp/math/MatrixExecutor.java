@@ -48,14 +48,20 @@ public final class MatrixExecutor extends ParallelExecutor {
      * @param threadCount   The number of threads to create for the
      *                      handler.
      *************************************************************************/
-    public MatrixExecutor ( int threadCount ) {
-        super(threadCount);
-    }
+    public MatrixExecutor ( int threadCount ) { super(threadCount); }
+
+    /**************************************************************************
+     * <p>Constructor. Create MatrixExecutor from ParallelExecutor so the
+     * two are bound: shutting down one will shut down the other.
+     *
+     * @param P             The ParallelExecutor to bind to this new Executor
+     *************************************************************************/
+    public MatrixExecutor ( ParallelExecutor P ) { P.bind( this ); }
 
     /**************************************************************************
      * <p>Transpose the inputted matrix
      *
-     * @param matrix    The matrix to transpose
+     * @param matrix        The matrix to transpose
      *
      * @return a matrix equal to the transpose of the input
      *************************************************************************/
@@ -100,7 +106,7 @@ public final class MatrixExecutor extends ParallelExecutor {
     /**************************************************************************
      * <p>Transpose the inputted matrix
      *
-     * @param matrix    The matrix to transpose
+     * @param matrix        The matrix to transpose
      *
      * @return a matrix equal to the transpose of the input
      **************************************************************************/
@@ -150,7 +156,7 @@ public final class MatrixExecutor extends ParallelExecutor {
      * transpose equal to the transpose of a matrix except the conjugate of
      * each element is taken
      *
-     * @param matrix    The matrix to transpose
+     * @param matrix            The matrix to transpose
      *
      * @return a matrix equal to the transpose of the input
      *************************************************************************/
@@ -200,8 +206,8 @@ public final class MatrixExecutor extends ParallelExecutor {
      * <p>Matrix multiplication of m1 and m2. Number of columns of m1 must be
      * equal to the number of rows of m2.
      *
-     * @param m1    The first matrix
-     * @param m2    The second matrix
+     * @param m1            The first matrix
+     * @param m2            The second matrix
      *
      * @return a matrix m1*m2.
      **************************************************************************/
@@ -247,8 +253,8 @@ public final class MatrixExecutor extends ParallelExecutor {
      * <p>Matrix multiplication of m1 and m2. Number of columns of m1 must be
      * equal to the number of rows of m2.
      *
-     * @param m1    The first matrix
-     * @param m2    The second matrix
+     * @param m1            The first matrix
+     * @param m2            The second matrix
      *
      * @return a matrix m1*m2.
      **************************************************************************/
@@ -298,7 +304,7 @@ public final class MatrixExecutor extends ParallelExecutor {
     /**************************************************************************
      * <p>Compute the trace of the input matrix
      *
-     * @param matrix    the matrix
+     * @param matrix            the matrix
      *
      * @return the trace of the matrix.
      **************************************************************************/
@@ -309,7 +315,7 @@ public final class MatrixExecutor extends ParallelExecutor {
     /**************************************************************************
      * <p>Compute the trace of the input matrix
      *
-     * @param matrix    the matrix
+     * @param matrix            the matrix
      *
      * @return the trace of the matrix.
      **************************************************************************/

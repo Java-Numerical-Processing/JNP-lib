@@ -31,8 +31,6 @@ import com.evanstella.jnp.core.IllegalDimensionException;
 import com.evanstella.jnp.core.NDArray;
 import com.evanstella.jnp.core.Numeric;
 
-import java.security.cert.CertificateParsingException;
-
 /******************************************************************************
  * <p>Matrix encapsulates all of the Matrix operations that can be done on
  * NDArrays. These operations are implemented as static methods and are

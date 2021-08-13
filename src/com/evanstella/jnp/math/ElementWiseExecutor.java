@@ -45,9 +45,15 @@ public final class ElementWiseExecutor extends ParallelExecutor {
      * @param threadCount   The number of threads to create for the
      *                      handler.
      *************************************************************************/
-    public ElementWiseExecutor ( int threadCount ) {
-        super( threadCount );
-    }
+    public ElementWiseExecutor ( int threadCount ) { super( threadCount ); }
+
+    /**************************************************************************
+     * <p>Constructor. Create ElementWiseExecutor from ParallelExecutor so the
+     * two are bound: shutting down one will shut down the other.
+     *
+     * @param P             The ParallelExecutor to bind to this new Executor
+     *************************************************************************/
+    public ElementWiseExecutor ( ParallelExecutor P ) { P.bind( this ); }
 
     /**************************************************************************
      * <p>A generic parallel worker for running element-wise operations in

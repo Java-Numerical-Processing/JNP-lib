@@ -28,6 +28,8 @@ package com.evanstella.jnp.core;
 
 /******************************************************************************
  * <p>An interface for numerical functions of 1 variable ( y = f(z) )
+ *
+ * @author Evan Stella
  *****************************************************************************/
 public interface ComplexExpression1D {
 

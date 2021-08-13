@@ -33,7 +33,8 @@ import com.evanstella.jnp.core.Numeric;
 
 /******************************************************************************
  * Vector encapsulates all of the vector operations that can be done on
- * NDArrays.
+ * NDArrays. All Operations are implemented as static methods and not executed
+ * in parallel as these operations are not super computationally intensive.
  *
  * @author Evan Stella
  *****************************************************************************/
@@ -187,8 +188,9 @@ public final class Vector {
         validateVectorDimensions( A, B );
         Numeric magA = mag( A );
         Numeric magB = mag( B );
-        Numeric cosine = Element.div( dot( A,B ), Element.mul(magA, magB) );
-        return Element.acos( cosine );
+        return Element.acos (
+            Element.div( dot( A, B ), Element.mul( magA, magB ) )
+        );
     }
 
     /**************************************************************************
