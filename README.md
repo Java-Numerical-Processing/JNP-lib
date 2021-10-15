@@ -10,7 +10,7 @@ Java Numerical Processing (JNP) is an open-source multithreaded numerical comput
 - Numerical Operations
     - Element-wise operations on N-dimensional data with support for complex valued data
     - Vector operations with support for complex valued vectors
-    - Matrix Operations *(planned)*
+    - Matrix Operations
     - Linear equation solvers *(planned)*
     - Numerical function integration and derivatives *(planned)*
 - Graphing and visualization *(planned)*
